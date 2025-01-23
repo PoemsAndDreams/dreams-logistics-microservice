@@ -8,22 +8,22 @@
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="abbreviation" column="abbreviation" jdbcType="VARCHAR"/>
-            <result property="parentId" column="parentId" jdbcType="BIGINT"/>
-            <result property="orgType" column="orgType" jdbcType="TINYINT"/>
-            <result property="provinceId" column="provinceId" jdbcType="BIGINT"/>
-            <result property="cityId" column="cityId" jdbcType="BIGINT"/>
-            <result property="countyId" column="countyId" jdbcType="BIGINT"/>
+            <result property="parentId" column="parent_id" jdbcType="BIGINT"/>
+            <result property="orgType" column="org_type" jdbcType="TINYINT"/>
+            <result property="provinceId" column="province_id" jdbcType="BIGINT"/>
+            <result property="cityId" column="city_id" jdbcType="BIGINT"/>
+            <result property="countyId" column="county_id" jdbcType="BIGINT"/>
             <result property="address" column="address" jdbcType="VARCHAR"/>
-            <result property="contractNumber" column="contractNumber" jdbcType="VARCHAR"/>
-            <result property="managerId" column="managerId" jdbcType="BIGINT"/>
-            <result property="treePath" column="treePath" jdbcType="VARCHAR"/>
-            <result property="sortValue" column="sortValue" jdbcType="INTEGER"/>
+            <result property="contractNumber" column="contract_number" jdbcType="VARCHAR"/>
+            <result property="managerId" column="manager_id" jdbcType="BIGINT"/>
+            <result property="treePath" column="tree_path" jdbcType="VARCHAR"/>
+            <result property="sortValue" column="sort_value" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="BIT"/>
             <result property="description" column="description" jdbcType="VARCHAR"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="createUser" column="createUser" jdbcType="BIGINT"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="updateUser" column="updateUser" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="createUser" column="create_user" jdbcType="BIGINT"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="updateUser" column="update_user" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.CarriageMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.Carriage">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="templateType" column="template_type" jdbcType="TINYINT"/>
+            <result property="transportType" column="transport_type" jdbcType="TINYINT"/>
+            <result property="associatedCity" column="associated_city" jdbcType="VARCHAR"/>
+            <result property="firstWeight" column="first_weight" jdbcType="DOUBLE"/>
+            <result property="continuousWeight" column="continuous_weight" jdbcType="DOUBLE"/>
+            <result property="lightThrowingCoefficient" column="light_throwing_coefficient" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,templateType,transportType,
+        associatedCity,firstWeight,continuousWeight,
+        lightThrowingCoefficient,createTime,updateTime
+    </sql>
+</mapper>

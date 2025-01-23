@@ -1,4 +1,4 @@
-package com.dreams.logistics.model.enums;
+package com.dreams.logistics.enums;
 
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -7,19 +7,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 用户角色枚举
+ * 文件上传业务类型枚举
  */
-public enum UserRoleEnum {
+public enum FileUploadBizEnum {
 
-    USER("用户", "user"),
-    ADMIN("管理员", "admin"),
-    BAN("被封号", "ban");
+    USER_AVATAR("用户头像", "user_avatar"),
+    BANK_PICTURE("分类图片", "bank_picture"),
+    LITERATURE_PICTURE("文章图片", "article_picture");
 
     private final String text;
 
     private final String value;
 
-    UserRoleEnum(String text, String value) {
+    FileUploadBizEnum(String text, String value) {
         this.text = text;
         this.value = value;
     }
@@ -39,11 +39,11 @@ public enum UserRoleEnum {
      * @param value
      * @return
      */
-    public static UserRoleEnum getEnumByValue(String value) {
+    public static FileUploadBizEnum getEnumByValue(String value) {
         if (ObjectUtils.isEmpty(value)) {
             return null;
         }
-        for (UserRoleEnum anEnum : UserRoleEnum.values()) {
+        for (FileUploadBizEnum anEnum : FileUploadBizEnum.values()) {
             if (anEnum.value.equals(value)) {
                 return anEnum;
             }

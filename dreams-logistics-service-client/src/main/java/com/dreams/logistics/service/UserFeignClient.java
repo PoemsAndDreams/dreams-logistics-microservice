@@ -2,7 +2,7 @@ package com.dreams.logistics.service;
 
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.Menu;
-import com.dreams.logistics.model.enums.UserRoleEnum;
+import com.dreams.logistics.enums.UserRoleEnum;
 import com.dreams.logistics.model.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.openfeign.FeignClient;

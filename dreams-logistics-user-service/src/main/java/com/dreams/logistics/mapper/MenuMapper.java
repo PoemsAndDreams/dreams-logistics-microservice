@@ -15,7 +15,7 @@ import java.util.List;
 */
 public interface MenuMapper extends BaseMapper<Menu> {
 
-    @Select("SELECT	* FROM menu WHERE id IN (SELECT menuId FROM role_menu WHERE roleId IN ( SELECT roleId FROM user_role WHERE userId = #{userId} ))")
+    @Select("SELECT	* FROM menu WHERE id IN (SELECT menu_id FROM role_menu WHERE role_id IN ( SELECT role_id FROM user_role WHERE user_id = #{userId} ))")
     List<Menu> selectPermissionByUserId(@Param("userId") String userId);
 
 

@@ -12,7 +12,7 @@ import com.dreams.logistics.mapper.UserMapper;
 import com.dreams.logistics.model.dto.user.UserQueryRequest;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.Role;
-import com.dreams.logistics.model.enums.UserRoleEnum;
+import com.dreams.logistics.enums.UserRoleEnum;
 import com.dreams.logistics.model.vo.LoginUserVO;
 import com.dreams.logistics.model.vo.UserVO;
 import com.dreams.logistics.service.UserService;
@@ -49,7 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
         synchronized (userAccount.intern()) {
             // 账户不能重复
             QueryWrapper<DcUser> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("userAccount", userAccount);
+            queryWrapper.eq("user_account", userAccount);
             long count = this.baseMapper.selectCount(queryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
@@ -86,7 +86,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
 //        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
         // 查询用户是否存在
         QueryWrapper<DcUser> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
+        queryWrapper.eq("user_account", userAccount);
 //        queryWrapper.eq("userPassword", encryptPassword);
         DcUser dcUser = this.baseMapper.selectOne(queryWrapper);
         // 用户不存在
@@ -214,6 +214,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
         Long id = userQueryRequest.getId();
+        String userAccount = userQueryRequest.getUserAccount();
         String userName = userQueryRequest.getUserName();
         String userProfile = userQueryRequest.getUserProfile();
         String userRole = userQueryRequest.getUserRole();
@@ -221,9 +222,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
         String sortOrder = userQueryRequest.getSortOrder();
         QueryWrapper<DcUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(id != null, "id", id);
-        queryWrapper.eq(StringUtils.isNotBlank(userRole), "userRole", userRole);
-        queryWrapper.like(StringUtils.isNotBlank(userProfile), "userProfile", userProfile);
-        queryWrapper.like(StringUtils.isNotBlank(userName), "userName", userName);
+        queryWrapper.eq(StringUtils.isNotBlank(userAccount), "user_account", userAccount);
+        queryWrapper.eq(StringUtils.isNotBlank(userRole), "user_role", userRole);
+        queryWrapper.eq(StringUtils.isNotBlank(userRole), "user_role", userRole);
+        queryWrapper.like(StringUtils.isNotBlank(userProfile), "user_profile", userProfile);
+        queryWrapper.like(StringUtils.isNotBlank(userName), "user_name", userName);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;

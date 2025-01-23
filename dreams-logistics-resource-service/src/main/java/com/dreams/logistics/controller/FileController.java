@@ -12,8 +12,7 @@ import com.dreams.logistics.manager.CosManager;
 import com.dreams.logistics.manager.OssManager;
 import com.dreams.logistics.model.dto.file.UploadFileRequest;
 import com.dreams.logistics.model.entity.DcUser;
-import com.dreams.logistics.model.enums.FileUploadBizEnum;
-import com.dreams.logistics.service.UserFeignClient;
+import com.dreams.logistics.enums.FileUploadBizEnum;
 
 import com.dreams.logistics.util.SecurityUtil;
 import com.qcloud.cos.model.PutObjectResult;

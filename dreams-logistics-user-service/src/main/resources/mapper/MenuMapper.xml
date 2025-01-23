@@ -8,15 +8,15 @@
             <id property="id" column="id" jdbcType="VARCHAR"/>
             <result property="code" column="code" jdbcType="VARCHAR"/>
             <result property="parentId" column="c" jdbcType="VARCHAR"/>
-            <result property="menuName" column="menuName" jdbcType="VARCHAR"/>
+            <result property="menuName" column="menu_name" jdbcType="VARCHAR"/>
             <result property="url" column="url" jdbcType="VARCHAR"/>
-            <result property="isMenu" column="isMenu" jdbcType="CHAR"/>
+            <result property="isMenu" column="is_menu" jdbcType="CHAR"/>
             <result property="level" column="level" jdbcType="INTEGER"/>
             <result property="sort" column="sort" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="CHAR"/>
             <result property="icon" column="icon" jdbcType="VARCHAR"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">

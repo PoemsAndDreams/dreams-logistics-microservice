@@ -24,6 +24,10 @@ spring:
           uri: lb://dreams-logistics-resource-service
           predicates:
             - Path=/api/resource/**
+        - id: dreams-logistics-transport-service
+          uri: lb://dreams-logistics-transport-service
+          predicates:
+            - Path=/api/transport/**
   redis:
     database: 1
     host: localhost

@@ -16,6 +16,7 @@
         <module>dreams-logistics-user-service</module>
         <module>dreams-logistics-auth-service</module>
         <module>dreams-logistics-resource-service</module>
+        <module>dreams-logistics-transport-service</module>
     </modules>
 
     <properties>

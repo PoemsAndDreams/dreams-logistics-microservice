@@ -1,0 +1,24 @@
+POST http://localhost:8102/api/user/checkCode/verify?key=checkcode:6058a3034c09450985d096b068eeb33a&code=L1FY
+
+
+###
+POST http://localhost:8101/api/user/checkCode/picCode
+
+###
+POST http://localhost:8101/api/user/oauth/token?client_id=DreamsWebApp&client_secret=DreamsWebApp&grant_type=password&username={"userAccount":"user3","authType":"password","userPassword":"111111"}
+
+###
+POST http://localhost:8101/api/auth/oauth/token?client_id=DreamsWebApp&client_secret=DreamsWebApp&grant_type=password&username={"userAccount":"dreams","authType":"password","userPassword":"123456","checkCode":"DDGM"}
+
+###
+POST http://localhost:8101/api/user/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZHJlYW1zLWNyZWF0aW9uIl0sInVzZXJfbmFtZSI6ImRyZWFtcyIsInNjb3BlIjpbImFsbCJdLCJleHAiOjE3MzY4Mzc0NjIsImF1dGhvcml0aWVzIjpbImQxIl0sImp0aSI6IjNlY2E2OGU5LTVlMWMtNGEyNi1hNGJjLWY4MDkzYTVmMjc1ZSIsImNsaWVudF9pZCI6IkRyZWFtc1dlYkFwcCJ9.3irJ131WJMeLNqBBoW-YO0xoJdNUdVgB9aFF73c7U50
+
+###
+POST http://localhost:8101/api/user/oauth/token?client_id=DreamsWebApp&client_secret=DreamsWebApp&grant_type=password&username=user3&password=111111
+
+###
+
+POST http://localhost:8101/api/user/oauth/token?client_id=DreamsWebApp&client_secret=DreamsWebApp&grant_type=authorization_code&code=m8dHog&redirect_uri=http://www.tandream.site
+
+
+

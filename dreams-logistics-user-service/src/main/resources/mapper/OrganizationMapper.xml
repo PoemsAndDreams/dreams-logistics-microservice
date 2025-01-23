@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.OrganizationMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.Organization">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="abbreviation" column="abbreviation" jdbcType="VARCHAR"/>
+            <result property="parentId" column="parentId" jdbcType="BIGINT"/>
+            <result property="orgType" column="orgType" jdbcType="TINYINT"/>
+            <result property="provinceId" column="provinceId" jdbcType="BIGINT"/>
+            <result property="cityId" column="cityId" jdbcType="BIGINT"/>
+            <result property="countyId" column="countyId" jdbcType="BIGINT"/>
+            <result property="address" column="address" jdbcType="VARCHAR"/>
+            <result property="contractNumber" column="contractNumber" jdbcType="VARCHAR"/>
+            <result property="managerId" column="managerId" jdbcType="BIGINT"/>
+            <result property="treePath" column="treePath" jdbcType="VARCHAR"/>
+            <result property="sortValue" column="sortValue" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="BIT"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="createUser" column="createUser" jdbcType="BIGINT"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="updateUser" column="updateUser" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,abbreviation,
+        parentId,orgType,provinceId,
+        cityId,countyId,address,
+        contractNumber,managerId,treePath,
+        sortValue,status,description,
+        createTime,createUser,updateTime,
+        updateUser
+    </sql>
+</mapper>

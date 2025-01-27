@@ -119,7 +119,7 @@ public class MenuController {
     }
 
     /**
-     * 根据 id 获取用户（仅管理员）
+     * 根据 id 获取用户
      * @param id
      * @param request
      * @return
@@ -149,7 +149,7 @@ public class MenuController {
 //    }
 
     /**
-     * 分页获取用户列表（仅管理员）
+     * 分页获取用户列表
      *
      * @param menuQueryRequest
      * @param request

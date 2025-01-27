@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.RefundRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.RefundRecord">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="tradingOrderNo" column="trading_order_no" jdbcType="BIGINT"/>
+            <result property="productOrderNo" column="product_order_no" jdbcType="BIGINT"/>
+            <result property="refundNo" column="refund_no" jdbcType="BIGINT"/>
+            <result property="enterpriseId" column="enterprise_id" jdbcType="BIGINT"/>
+            <result property="tradingChannel" column="trading_channel" jdbcType="VARCHAR"/>
+            <result property="refundStatus" column="refund_status" jdbcType="INTEGER"/>
+            <result property="refundCode" column="refund_code" jdbcType="VARCHAR"/>
+            <result property="refundMsg" column="refund_msg" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="refundAmount" column="refund_amount" jdbcType="DECIMAL"/>
+            <result property="total" column="total" jdbcType="DECIMAL"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,trading_order_no,product_order_no,
+        refund_no,enterprise_id,trading_channel,
+        refund_status,refund_code,refund_msg,
+        remark,refund_amount,total,
+        created,updated
+    </sql>
+</mapper>

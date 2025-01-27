@@ -28,6 +28,7 @@
         <spring-boot.version>2.3.7.RELEASE</spring-boot.version>
         <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
         <spring-cloud-alibaba.version>2.2.6.RELEASE</spring-cloud-alibaba.version>
+        <alipay.easysdk.version>2.2.2</alipay.easysdk.version>
         <fastjson.version>1.2.83</fastjson.version>
         <!--        <spring-boot.version>2.6.13</spring-boot.version>-->
         <!--        <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>-->

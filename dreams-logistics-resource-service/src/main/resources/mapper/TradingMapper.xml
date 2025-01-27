@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.TradingMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.Trading">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="productOrderNo" column="product_order_no" jdbcType="BIGINT"/>
+            <result property="tradingOrderNo" column="trading_order_no" jdbcType="BIGINT"/>
+            <result property="tradingChannel" column="trading_channel" jdbcType="VARCHAR"/>
+            <result property="tradingType" column="trading_type" jdbcType="VARCHAR"/>
+            <result property="tradingState" column="trading_state" jdbcType="INTEGER"/>
+            <result property="payeeName" column="payee_name" jdbcType="VARCHAR"/>
+            <result property="payeeId" column="payee_id" jdbcType="BIGINT"/>
+            <result property="payerName" column="payer_name" jdbcType="VARCHAR"/>
+            <result property="payerId" column="payer_id" jdbcType="BIGINT"/>
+            <result property="tradingAmount" column="trading_amount" jdbcType="DECIMAL"/>
+            <result property="refund" column="refund" jdbcType="DECIMAL"/>
+            <result property="isRefund" column="is_refund" jdbcType="VARCHAR"/>
+            <result property="resultCode" column="result_code" jdbcType="VARCHAR"/>
+            <result property="resultMsg" column="result_msg" jdbcType="VARCHAR"/>
+            <result property="resultJson" column="result_json" jdbcType="VARCHAR"/>
+            <result property="placeOrderCode" column="place_order_code" jdbcType="VARCHAR"/>
+            <result property="placeOrderMsg" column="place_order_msg" jdbcType="VARCHAR"/>
+            <result property="placeOrderJson" column="place_order_json" jdbcType="VARCHAR"/>
+            <result property="enterpriseId" column="enterprise_id" jdbcType="BIGINT"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="qrCode" column="qr_code" jdbcType="VARCHAR"/>
+            <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+            <result property="enableFlag" column="enable_flag" jdbcType="VARCHAR"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,product_order_no,trading_order_no,
+        trading_channel,trading_type,trading_state,
+        payee_name,payee_id,payer_name,
+        payer_id,trading_amount,refund,
+        is_refund,result_code,result_msg,
+        result_json,place_order_code,place_order_msg,
+        place_order_json,enterprise_id,memo,
+        qr_code,open_id,enable_flag,
+        updated,created
+    </sql>
+</mapper>

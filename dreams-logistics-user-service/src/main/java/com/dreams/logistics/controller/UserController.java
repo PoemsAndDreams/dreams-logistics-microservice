@@ -207,7 +207,7 @@ public class UserController {
     }
 
     /**
-     * 根据 id 获取用户（仅管理员）
+     * 根据 id 获取用户
      *
      * @param id
      * @param request
@@ -239,7 +239,7 @@ public class UserController {
     }
 
     /**
-     * 分页获取用户列表（仅管理员）
+     * 分页获取用户列表
      *
      * @param userQueryRequest
      * @param request

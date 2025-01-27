@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.Order">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="tradingOrderNo" column="trading_order_no" jdbcType="BIGINT"/>
+            <result property="tradingChannel" column="trading_channel" jdbcType="VARCHAR"/>
+            <result property="paymentMethod" column="payment_method" jdbcType="TINYINT"/>
+            <result property="paymentStatus" column="payment_status" jdbcType="TINYINT"/>
+            <result property="amount" column="amount" jdbcType="DECIMAL"/>
+            <result property="refund" column="refund" jdbcType="DECIMAL"/>
+            <result property="isRefund" column="is_refund" jdbcType="VARCHAR"/>
+            <result property="orderType" column="order_type" jdbcType="TINYINT"/>
+            <result property="pickupType" column="pickup_type" jdbcType="TINYINT"/>
+            <result property="memberId" column="member_id" jdbcType="BIGINT"/>
+            <result property="receiverMemberId" column="receiver_member_id" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="receiverProvinceId" column="receiver_province_id" jdbcType="BIGINT"/>
+            <result property="receiverCityId" column="receiver_city_id" jdbcType="BIGINT"/>
+            <result property="receiverCountyId" column="receiver_county_id" jdbcType="BIGINT"/>
+            <result property="receiverAddress" column="receiver_address" jdbcType="VARCHAR"/>
+            <result property="receiverAddressId" column="receiver_address_id" jdbcType="BIGINT"/>
+            <result property="receiverName" column="receiver_name" jdbcType="VARCHAR"/>
+            <result property="receiverPhone" column="receiver_phone" jdbcType="VARCHAR"/>
+            <result property="senderProvinceId" column="sender_province_id" jdbcType="BIGINT"/>
+            <result property="senderCityId" column="sender_city_id" jdbcType="BIGINT"/>
+            <result property="senderCountyId" column="sender_county_id" jdbcType="BIGINT"/>
+            <result property="senderAddress" column="sender_address" jdbcType="VARCHAR"/>
+            <result property="senderAddressId" column="sender_address_id" jdbcType="BIGINT"/>
+            <result property="senderName" column="sender_name" jdbcType="VARCHAR"/>
+            <result property="senderPhone" column="sender_phone" jdbcType="VARCHAR"/>
+            <result property="currentAgencyId" column="current_agency_id" jdbcType="BIGINT"/>
+            <result property="distance" column="distance" jdbcType="DOUBLE"/>
+            <result property="mark" column="mark" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="estimatedStartTime" column="estimated_start_time" jdbcType="TIMESTAMP"/>
+            <result property="estimatedArrivalTime" column="estimated_arrival_time" jdbcType="TIMESTAMP"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,trading_order_no,trading_channel,
+        payment_method,payment_status,amount,
+        refund,is_refund,order_type,
+        pickup_type,member_id,receiver_member_id,
+        status,receiver_province_id,receiver_city_id,
+        receiver_county_id,receiver_address,receiver_address_id,
+        receiver_name,receiver_phone,sender_province_id,
+        sender_city_id,sender_county_id,sender_address,
+        sender_address_id,sender_name,sender_phone,
+        current_agency_id,distance,mark,
+        create_time,estimated_start_time,estimated_arrival_time,
+        created,updated
+    </sql>
+</mapper>

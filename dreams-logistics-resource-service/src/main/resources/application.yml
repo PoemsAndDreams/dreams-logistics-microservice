@@ -24,7 +24,7 @@ spring:
   # todo 需替换配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dreams_logistics_db
+    url: jdbc:mysql://localhost:3306/dreams_logistics_resource_db
     username: root
     password: 123456
 
@@ -123,6 +123,30 @@ spring:
 
 
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    publisher-confirm-type: correlated #correlated 异步回调，定义ConfirmCallback，MQ返回结果时会回调这个ConfirmCallback
+    publisher-returns: true #开启publish-return功能，同样是基于callback机制，需要定义ReturnCallback
+    template:
+      mandatory: true #定义消息路由失败时的策略。true，则调用ReturnCallback；false：则直接丢弃消息
+    listener:
+      simple:
+        acknowledge-mode: auto #出现异常时返回unack，消息回滚到mq；没有异常，返回ack ,manual:手动控制,none:丢弃消息，不回滚到mq
+        retry:
+          enabled: true #开启消费者失败重试
+          initial-interval: 1000ms #初识的失败等待时长为1秒
+          multiplier: 1 #失败的等待时长倍数，下次等待时长 = multiplier * last-interval
+          max-attempts: 3 #最大重试次数
+          stateless: true #true无状态；false有状态。如果业务中包含事务，这里改为false
+
+
+
+
+
 
 
 server:
@@ -177,3 +201,35 @@ knife4j:
 #          - com.dreams.logistics.controller
 
 
+xxl:
+  job:
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+    executor:
+      appname: dreams-trade
+      address:
+      ip:
+      port: 9999
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken: default_token
+
+qrcode: #二维码生成参数
+  margin: 2 #边距，二维码和背景之间的边距
+  fore-color: "#000000" #二维码颜色，默认黑色
+  back-color: "#ffffff" #背景色，默认白色
+  #低级别的像素块更大，可以远距离识别，但是遮挡就会造成无法识别。高级别则相反，像素块小，允许遮挡一定范围，但是像素块更密集。
+  error-correction-level: M #纠错级别，可选参数：L、M、Q、H，默认：M
+  width: 300 #宽
+  height: 300 #高
+
+job:
+  trading:
+    count: 100 #每次查询交易单的数量
+  refund:
+    count: 100 #每次查询退款单的数量
+
+
+dreams:
+  mq:
+    enable: true

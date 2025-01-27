@@ -115,7 +115,7 @@ public class OrganizationController {
     }
 
     /**
-     * 根据 id 获取机构（仅管理员）
+     * 根据 id 获取机构
      * @param id
      * @param request
      * @return

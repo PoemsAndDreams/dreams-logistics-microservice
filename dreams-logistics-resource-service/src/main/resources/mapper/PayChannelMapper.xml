@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.PayChannelMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.PayChannel">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="channelName" column="channel_name" jdbcType="VARCHAR"/>
+            <result property="channelLabel" column="channel_label" jdbcType="VARCHAR"/>
+            <result property="domain" column="domain" jdbcType="VARCHAR"/>
+            <result property="appId" column="app_id" jdbcType="VARCHAR"/>
+            <result property="publicKey" column="public_key" jdbcType="VARCHAR"/>
+            <result property="merchantPrivateKey" column="merchant_private_key" jdbcType="VARCHAR"/>
+            <result property="otherConfig" column="other_config" jdbcType="VARCHAR"/>
+            <result property="encryptKey" column="encrypt_key" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="notifyUrl" column="notify_url" jdbcType="VARCHAR"/>
+            <result property="enableFlag" column="enable_flag" jdbcType="VARCHAR"/>
+            <result property="enterpriseId" column="enterprise_id" jdbcType="BIGINT"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,channel_name,channel_label,
+        domain,app_id,public_key,
+        merchant_private_key,other_config,encrypt_key,
+        remark,notify_url,enable_flag,
+        enterprise_id,created,updated
+    </sql>
+</mapper>

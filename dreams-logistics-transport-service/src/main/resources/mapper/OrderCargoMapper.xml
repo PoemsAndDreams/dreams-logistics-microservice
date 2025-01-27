@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.OrderCargoMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.OrderCargo">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="tranOrderId" column="tran_order_id" jdbcType="BIGINT"/>
+            <result property="goodsTypeId" column="goods_type_id" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="unit" column="unit" jdbcType="VARCHAR"/>
+            <result property="cargoValue" column="cargo_value" jdbcType="DECIMAL"/>
+            <result property="cargoBarcode" column="cargo_barcode" jdbcType="VARCHAR"/>
+            <result property="quantity" column="quantity" jdbcType="INTEGER"/>
+            <result property="volume" column="volume" jdbcType="DECIMAL"/>
+            <result property="weight" column="weight" jdbcType="DECIMAL"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="totalVolume" column="total_volume" jdbcType="DECIMAL"/>
+            <result property="totalWeight" column="total_weight" jdbcType="DECIMAL"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_id,tran_order_id,
+        goods_type_id,name,unit,
+        cargo_value,cargo_barcode,quantity,
+        volume,weight,remark,
+        total_volume,total_weight,created,
+        updated
+    </sql>
+</mapper>

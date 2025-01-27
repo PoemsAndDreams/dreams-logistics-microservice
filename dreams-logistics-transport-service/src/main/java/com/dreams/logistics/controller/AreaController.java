@@ -94,7 +94,7 @@ public class AreaController {
     }
 
     /**
-     * 根据 id 获取区域（仅管理员）
+     * 根据 id 获取区域
      *
      * @param id
      * @param request

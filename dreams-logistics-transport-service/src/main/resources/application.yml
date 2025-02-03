@@ -3,6 +3,14 @@ spring:
   application:
     name: dreams-logistics-transport-service
 
+
+  data:
+    neo4j:
+      uri: bolt://localhost:7687
+      username: neo4j
+      password: 123456
+
+
   rabbitmq:
     host: localhost
     port: 5672
@@ -126,3 +134,9 @@ knife4j:
 dreams:
   mq:
     enable: true
+  rabbitmq:
+    exchange: dreams-organization
+
+
+baidu:
+  ak: xxxx

@@ -8,6 +8,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @ComponentScan("com.dreams.logistics")
 @EnableDiscoveryClient
+@EnableNeo4jRepositories(basePackages = "com.dreams.logistics")
 @EnableFeignClients(basePackages = {"com.dreams.logistics.service"})
 public class DreamsLogisticsTransportServiceApplication {
 

@@ -22,9 +22,11 @@ public enum ErrorCode {
     CARRIAGE_REPEAT(60005, "模板重复，只能有一个模板"),
     ECONOMIC_ZONE_CITY_REPEAT(60006, "经济区互寄关联城市重复"),
     NOT_FOUND(60007, "寄/收地址所属区域暂无计价规则，无法下单"),
-    METHOD_CALL_ERROR(60008, "方法调用错误，经济区互寄不通过该方法查询模板");
+    METHOD_CALL_ERROR(60008, "方法调用错误，经济区互寄不通过该方法查询模板"),
 
+    ORGANIZATION_INFORMATION_FIRST(60009,"请先完善机构信息"),
 
+    JSON_SERIALIZE_ERROR(60010,"序列化json出错！");
 
     /**
      * 状态码

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.TransportTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.TransportTask">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="truckPlanId" column="truck_plan_id" jdbcType="BIGINT"/>
+            <result property="transportTripsId" column="transport_trips_id" jdbcType="BIGINT"/>
+            <result property="startAgencyId" column="start_agency_id" jdbcType="BIGINT"/>
+            <result property="endAgencyId" column="end_agency_id" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="assignedStatus" column="assigned_status" jdbcType="TINYINT"/>
+            <result property="loadingStatus" column="loading_status" jdbcType="INTEGER"/>
+            <result property="truckId" column="truck_id" jdbcType="VARCHAR"/>
+            <result property="cargoPickUpPicture" column="cargo_pick_up_picture" jdbcType="VARCHAR"/>
+            <result property="cargoPicture" column="cargo_picture" jdbcType="VARCHAR"/>
+            <result property="transportCertificate" column="transport_certificate" jdbcType="VARCHAR"/>
+            <result property="deliverPicture" column="deliver_picture" jdbcType="VARCHAR"/>
+            <result property="deliveryLatitude" column="delivery_latitude" jdbcType="VARCHAR"/>
+            <result property="deliveryLongitude" column="delivery_longitude" jdbcType="VARCHAR"/>
+            <result property="deliverLatitude" column="deliver_latitude" jdbcType="VARCHAR"/>
+            <result property="deliverLongitude" column="deliver_longitude" jdbcType="VARCHAR"/>
+            <result property="planDepartureTime" column="plan_departure_time" jdbcType="TIMESTAMP"/>
+            <result property="actualDepartureTime" column="actual_departure_time" jdbcType="TIMESTAMP"/>
+            <result property="planArrivalTime" column="plan_arrival_time" jdbcType="TIMESTAMP"/>
+            <result property="actualArrivalTime" column="actual_arrival_time" jdbcType="TIMESTAMP"/>
+            <result property="mark" column="mark" jdbcType="VARCHAR"/>
+            <result property="distance" column="distance" jdbcType="DOUBLE"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,truck_plan_id,transport_trips_id,
+        start_agency_id,end_agency_id,status,
+        assigned_status,loading_status,truck_id,
+        cargo_pick_up_picture,cargo_picture,transport_certificate,
+        deliver_picture,delivery_latitude,delivery_longitude,
+        deliver_latitude,deliver_longitude,plan_departure_time,
+        actual_departure_time,plan_arrival_time,actual_arrival_time,
+        mark,distance,created,
+        updated
+    </sql>
+</mapper>

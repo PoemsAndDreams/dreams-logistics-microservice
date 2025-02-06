@@ -25,4 +25,6 @@ public interface AreaService extends IService<Area> {
     List<Area> getChildrens(Area root, List<Area> all);
 
     List<AreaVO> findChildren(Long parentId);
+
+    Area findById(Long id);
 }

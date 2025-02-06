@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.TransportOrderMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.TransportOrder">
+            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="schedulingStatus" column="scheduling_status" jdbcType="INTEGER"/>
+            <result property="startAgencyId" column="start_agency_id" jdbcType="BIGINT"/>
+            <result property="endAgencyId" column="end_agency_id" jdbcType="BIGINT"/>
+            <result property="currentAgencyId" column="current_agency_id" jdbcType="BIGINT"/>
+            <result property="nextAgencyId" column="next_agency_id" jdbcType="BIGINT"/>
+            <result property="transportLine" column="transport_line" jdbcType="VARCHAR"/>
+            <result property="totalVolume" column="total_volume" jdbcType="DECIMAL"/>
+            <result property="totalWeight" column="total_weight" jdbcType="DECIMAL"/>
+            <result property="isRejection" column="is_rejection" jdbcType="TINYINT"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_id,status,
+        scheduling_status,start_agency_id,end_agency_id,
+        current_agency_id,next_agency_id,transport_line,
+        total_volume,total_weight,is_rejection,
+        created,updated
+    </sql>
+</mapper>

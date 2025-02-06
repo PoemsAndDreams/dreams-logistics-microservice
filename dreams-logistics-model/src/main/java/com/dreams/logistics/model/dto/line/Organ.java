@@ -1,5 +1,6 @@
 package com.dreams.logistics.model.dto.line;
 
+import cn.hutool.core.annotation.Alias;
 import lombok.Data;
 
 /**
@@ -10,6 +11,7 @@ public class Organ {
     /**
      * 机构id
      */
+    @Alias("bid")
     private Long id;
 
 

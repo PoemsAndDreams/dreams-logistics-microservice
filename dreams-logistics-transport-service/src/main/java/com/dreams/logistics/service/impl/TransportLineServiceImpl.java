@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -12,6 +11,8 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dreams.logistics.common.ErrorCode;
+import com.dreams.logistics.entity.line.DispatchConfiguration;
+import com.dreams.logistics.enums.DispatchMethodEnum;
 import com.dreams.logistics.exception.BusinessException;
 
 import com.dreams.logistics.entity.line.TransportLine;
@@ -28,16 +29,15 @@ import com.dreams.logistics.model.dto.line.TransportLineSearch;
 import com.dreams.logistics.repository.TransportLineRepository;
 import com.dreams.logistics.service.CostConfigurationService;
 
+import com.dreams.logistics.service.DispatchConfigurationService;
 import com.dreams.logistics.service.OrganService;
 import com.dreams.logistics.service.TransportLineService;
 import com.dreams.logistics.utils.BaiduMap;
-import org.springframework.data.neo4j.types.Coordinate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -57,6 +57,10 @@ public class TransportLineServiceImpl implements TransportLineService {
 
     @Resource
     private CostConfigurationService costConfigurationService;
+
+
+    @Resource
+    private DispatchConfigurationService dispatchConfigurationService;
 
     // 新增路线业务规则：干线：起点终点无顺序，支线：起点必须是二级转运中心，接驳路线：起点必须是网点
     @Override
@@ -142,7 +146,7 @@ public class TransportLineServiceImpl implements TransportLineService {
         String driving = "";
         //设置地图参数
         try {
-            driving = baiduMap.directionliteByDriving(startOrgan.getLatitude() + "," + startOrgan.getLongitude(), endOrgan.getLatitude() + "," + endOrgan.getLongitude());
+            driving = baiduMap.directionLiteByDriving(startOrgan.getLatitude() + "," + startOrgan.getLongitude(), endOrgan.getLatitude() + "," + endOrgan.getLongitude());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -251,4 +255,26 @@ public class TransportLineServiceImpl implements TransportLineService {
     public TransportLine queryById(Long id) {
         return this.transportLineRepository.queryById(id);
     }
+
+    /**
+     * 根据调度策略查询路线
+     *
+     * @param startId 开始网点id
+     * @param endId   结束网点id
+     * @return 路线
+     */
+    @Override
+    public TransportLineNode queryPathByDispatchMethod(Long startId, Long endId) {
+        //调度方式配置
+        DispatchConfiguration configuration = this.dispatchConfigurationService.findConfiguration();
+        int method = configuration.getDispatchMethod();
+
+        //调度方式，1转运次数最少，2成本最低
+        if (ObjectUtil.equal(DispatchMethodEnum.SHORTEST_PATH.getCode(), method)) {
+            return this.queryShortestPath(startId, endId);
+        } else {
+            return this.findLowestPath(startId, endId);
+        }
+    }
+
 }

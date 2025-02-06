@@ -8,6 +8,7 @@ import com.dreams.logistics.exception.BusinessException;
 import com.dreams.logistics.model.dto.line.TransportLineDTO;
 import com.dreams.logistics.model.dto.line.TransportLineNode;
 import com.dreams.logistics.model.dto.line.TransportLineSearch;
+import com.dreams.logistics.service.DispatchConfigurationService;
 import com.dreams.logistics.service.TransportLineService;
 import com.dreams.logistics.utils.TransportLineUtils;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,8 @@ public class TransportLineController {
     @Resource
     private TransportLineService transportLineService;
 
-
+    @Resource
+    private DispatchConfigurationService dispatchConfigurationService;
     /**
      *查询两个网点之间最短的路线，最大查询深度为：10
      */
@@ -62,7 +64,7 @@ public class TransportLineController {
         TransportLine transportLine = TransportLineUtils.toEntity(transportLineDTO);
         Boolean result = this.transportLineService.createLine(transportLine);
         if (!result) {
-            throw new BusinessException("当前线路未注支持!", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            throw new BusinessException("当前线路未支持!", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
         return ResultUtils.success(result);
     }

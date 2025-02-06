@@ -1,32 +1,53 @@
 package com.dreams.logistics.service.impl;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.dreams.logistics.common.Constants;
 import com.dreams.logistics.common.ErrorCode;
 import com.dreams.logistics.constant.CommonConstant;
+import com.dreams.logistics.enums.OrderPaymentStatus;
+import com.dreams.logistics.enums.OrderPickupType;
+import com.dreams.logistics.enums.OrderStatus;
+import com.dreams.logistics.enums.PickupDispatchTaskType;
 import com.dreams.logistics.exception.BusinessException;
+import com.dreams.logistics.model.dto.msg.OrderMsg;
 import com.dreams.logistics.model.dto.msg.TradeStatusMsg;
 import com.dreams.logistics.model.dto.order.OrderAddRequest;
 import com.dreams.logistics.model.dto.order.OrderSearchRequest;
 import com.dreams.logistics.model.dto.order.OrderUpdateRequest;
+import com.dreams.logistics.model.entity.Area;
 import com.dreams.logistics.model.entity.Order;
 import com.dreams.logistics.model.entity.OrderCargo;
+import com.dreams.logistics.model.entity.OrderLocation;
 import com.dreams.logistics.model.vo.OrderVO;
-import com.dreams.logistics.service.OrderCargoService;
-import com.dreams.logistics.service.OrderService;
+import com.dreams.logistics.service.*;
 import com.dreams.logistics.mapper.OrderMapper;
+import com.dreams.logistics.utils.BaiduMap;
 import com.dreams.logistics.utils.SqlUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.geo.GeoResult;
+import org.springframework.data.neo4j.types.Coordinate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +55,7 @@ import java.util.stream.Collectors;
 * @description 针对表【order(订单)】的数据库操作Service实现
 * @createDate 2025-01-25 14:15:02
 */
+@Slf4j
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     implements OrderService{
@@ -44,6 +66,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
     @Resource
     private OrderCargoService orderCargoService;
+
+    @Resource
+    private AreaService areaService;
+    @Resource
+    private MQFeign mqFeign;
+
+    @Resource
+    private BaiduMap baiduMap;
+    
+    @Resource
+    private OrderLocationService orderLocationService;
 
     @Override
     public Page<OrderVO> page(OrderSearchRequest orderSearchRequest) {
@@ -81,6 +114,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
     @Override
     public Boolean saveOrderVO(OrderAddRequest orderAddRequest) {
+
+
         Order order = new Order();
         BeanUtils.copyProperties(orderAddRequest, order);
 
@@ -97,20 +132,250 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         order.setSenderCountyId(senderAddressId.get(1));
         order.setSenderCityId(senderAddressId.get(2));
 
-        boolean s = orderService.save(order);
-        OrderCargo orderCargo = new OrderCargo();
-        orderCargo.setOrderId(order.getId());
-        orderCargo.setName(orderAddRequest.getName());
-        orderCargo.setQuantity(1);
-        orderCargo.setVolume(orderAddRequest.getVolume());
-        orderCargo.setWeight(orderAddRequest.getWeight());
-        orderCargo.setRemark(orderAddRequest.getMark());
-        orderCargo.setTotalVolume(orderAddRequest.getVolume());
-        orderCargo.setTotalWeight(orderAddRequest.getWeight());
-        boolean c = orderCargoService.save(orderCargo);
 
-        return s && c;
+        //获取位置信息
+        OrderLocation orderLocation = buildOrderLocation(order);
+        log.info("订单位置为：{}", orderLocation);
+
+        // 距离 设置当前机构ID
+        appendOtherInfo(order, orderLocation);
+        
+        order.setPaymentStatus(OrderPaymentStatus.UNPAID.getStatus());
+        if (OrderPickupType.NO_PICKUP.getCode().equals(order.getPickupType())) {
+            order.setStatus(OrderStatus.OUTLETS_SINCE_SENT.getCode());
+        } else {
+            order.setStatus(OrderStatus.PENDING.getCode());
+        }
+        
+        if (orderService.save(order)){
+            OrderCargo orderCargo = new OrderCargo();
+            orderCargo.setOrderId(order.getId());
+            orderCargo.setName(orderAddRequest.getName());
+            orderCargo.setQuantity(1);
+            orderCargo.setVolume(orderAddRequest.getVolume());
+            orderCargo.setWeight(orderAddRequest.getWeight());
+            orderCargo.setRemark(orderAddRequest.getMark());
+            orderCargo.setTotalVolume(orderAddRequest.getVolume());
+            orderCargo.setTotalWeight(orderAddRequest.getWeight());
+            orderCargoService.save(orderCargo);
+
+            orderLocation.setOrderId(order.getId());
+            orderLocationService.save(orderLocation);
+        }
+
+        // 生成订单mq 调度服务用来调度 之后快递员服务处理
+        noticeOrderStatusChange(order, orderLocation);
+
+
+        return true;
     }
+
+    /**
+     * 取件
+     *
+     * @param orderEntity 订单
+     * @param orderLocation 位置
+     */
+    private void noticeOrderStatusChange(Order orderEntity, OrderLocation orderLocation) {
+        String[] split = orderLocation.getSendLocation().split(",");
+        double lnt = Double.parseDouble(split[0]);
+        double lat = Double.parseDouble(split[1]);
+        OrderMsg orderMsg = OrderMsg.builder()
+                .created(LocalDateTimeUtil.toEpochMilli(orderEntity.getCreateTime()))
+                .estimatedEndTime(orderEntity.getEstimatedStartTime())
+                .mark(orderEntity.getMark())
+                .taskType(PickupDispatchTaskType.PICKUP.getCode())
+                .latitude(lat)
+                .longitude(lnt)
+                .agencyId(orderEntity.getCurrentAgencyId())
+                .orderId(orderEntity.getId())
+                .build();
+        //发送消息
+        this.mqFeign.sendMsg(Constants.MQ.Exchanges.ORDER_DELAYED, Constants.MQ.RoutingKeys.ORDER_CREATE, orderMsg.toJson(), Constants.MQ.LOW_DELAY);
+    }
+    
+    /**
+     * 补充数据
+     * @param order 订单
+     * @param orderLocation 订单位置
+     */
+    private void appendOtherInfo(Order order, OrderLocation orderLocation) {
+        // 当前机构
+        order.setCurrentAgencyId(Long.valueOf(orderLocation.getSendAgentId()));
+
+        //查询地图服务商
+        String[] sendLocation = orderLocation.getSendLocation().split(",");
+        double sendLnt = Double.parseDouble(sendLocation[0]);
+        double sendLat = Double.parseDouble(sendLocation[1]);
+
+        String[] receiveLocation = orderLocation.getReceiveLocation().split(",");
+        double receiveLnt = Double.parseDouble(receiveLocation[0]);
+        double receiveLat = Double.parseDouble(receiveLocation[1]);
+
+
+        String driving = "";
+        //设置地图参数
+        try {
+            driving = baiduMap.directionLiteByDriving(sendLat + "," + sendLnt, receiveLat + "," + receiveLnt);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (StrUtil.isEmpty(driving)) {
+            return;
+        }
+
+        JSONObject jsonObject = JSONUtil.parseObj(driving);
+        //距离，单位：米
+        Double distance = Convert.toDouble(jsonObject.getByPath("result.routes[0].distance"));
+        order.setDistance(distance);
+
+        //时间，单位：秒
+        Long duration = Convert.toLong(jsonObject.getByPath("result.routes[0].duration"), -1L);
+
+        // 预计到达时间 这里根据地图大致估算时间 并非实际时间
+        order.setEstimatedArrivalTime(LocalDateTime.now().plus(duration, ChronoUnit.SECONDS));
+    }
+
+
+    /**
+     * 根据发收件人地址获取起止机构ID 调用机构范围微服务
+     *
+     * @param order 订单
+     * @return 位置信息
+     */
+    private OrderLocation buildOrderLocation(Order order) {
+        String address = senderFullAddress(order);
+        HashMap<String,String> result = getAgencyId(address);
+        // 网点
+        String sendAgentId = result.get("agencyId");
+        // 坐标
+        String sendLocation = result.get("location");
+
+        String receiverAddress = receiverFullAddress(order);
+        HashMap<String,String> resultReceive = getAgencyId(receiverAddress);
+        // 网点
+        String receiveAgentId = resultReceive.get("agencyId");
+        // 坐标
+        String receiveAgentLocation = resultReceive.get("location");
+        
+        OrderLocation orderLocation = new OrderLocation();
+        orderLocation.setOrderId(order.getId());
+        orderLocation.setSendLocation(sendLocation);
+        orderLocation.setSendAgentId(sendAgentId);
+        orderLocation.setReceiveLocation(receiveAgentLocation);
+        orderLocation.setReceiveAgentId(receiveAgentId);
+        return orderLocation;
+    }
+
+
+    /**
+     * 合并地址
+     * @param entity 订单
+     * @return 地址
+     */
+    private String senderFullAddress(Order entity) {
+        Long province = entity.getSenderProvinceId();
+        Long city = entity.getSenderCityId();
+        Long county = entity.getSenderCountyId();
+
+        StringBuilder area = areaAddress(province, city, county);
+        area.append(entity.getSenderAddress());
+
+        return area.toString();
+    }
+
+    /**
+     * 合并地址
+     * @param orderDTO 订单
+     * @return 地址
+     */
+    private String receiverFullAddress(Order orderDTO) {
+        Long province = orderDTO.getReceiverProvinceId();
+        Long city = orderDTO.getReceiverCityId();
+        Long county = orderDTO.getReceiverCountyId();
+
+        StringBuilder stringBuilder = areaAddress(province, city, county);
+        stringBuilder.append(orderDTO.getReceiverAddress());
+        return stringBuilder.toString();
+    }
+
+    /**
+     * 合并地址
+     * @return 地址
+     */
+    private StringBuilder areaAddress(Long province, Long city, Long county) {
+        StringBuilder stringBuffer = new StringBuilder();
+
+        Area provinceAddress = areaService.findById(province);
+        Area cityAddress = areaService.findById(city);
+        Area countyAddress = areaService.findById(county);
+
+        stringBuffer.append(provinceAddress.getName());
+        stringBuffer.append(cityAddress.getName());
+        stringBuffer.append(countyAddress.getName());
+        return stringBuffer;
+    }
+
+
+    /**
+     * 根据地址计算网点
+     *
+     * @param address 地址
+     * @return
+     */
+    private HashMap<String,String> getAgencyId(String address)  {
+
+        if (ObjectUtil.isEmpty(address)) {
+            log.error("地址不能为空");
+            throw new BusinessException(ErrorCode.ADDRESS_CANNOT_BE_EMPTY);
+        }
+        String geocoding = "";
+        try {
+            //根据详细地址查询坐标
+            geocoding = baiduMap.geocoding(address);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject jsonObject = JSONUtil.parseObj(geocoding);
+
+        // 获取 "result" 对象
+        JSONObject resultJson = jsonObject.getJSONObject("result");
+
+        if (ObjectUtil.isEmpty(resultJson)) {
+            log.error("地址无法定位");
+            throw new BusinessException(ErrorCode.ADDRESS_CANNOT_BE_LOCATED);
+        }
+
+        // 获取 "location" 对象
+        JSONObject locationJson = resultJson.getJSONObject("location");
+
+        // 提取经度和纬度
+        double lng = locationJson.getDouble("lng");
+        double lat = locationJson.getDouble("lat");
+
+        log.info("地址和坐标-->" + address + "--" + lng + " , " + lat);
+
+        DecimalFormat df = new DecimalFormat("#.######");
+        String lngStr = df.format(lng);
+        String latStr = df.format(lat);
+
+        String location = StrUtil.format("{},{}", lngStr, latStr);
+        HashMap<String,String> result = new HashMap();
+
+        // todo 服务范围
+        List<Object> serviceScope = new ArrayList<>();
+        if (CollectionUtils.isEmpty(serviceScope)) {
+            log.error("地址不在服务范围");
+            throw new BusinessException(ErrorCode.ADDRESS_IS_NOT_IN_SERVICE);
+        }
+
+        return result;
+    }
+
+
 
     @Override
     public boolean removeOrder(Long id) {
@@ -125,6 +390,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         Order order = orderService.getById(orderUpdateRequest.getId());
         BeanUtils.copyProperties(orderUpdateRequest, order);
         order.setEstimatedStartTime(orderUpdateRequest.getPickupTimeRange().get(0));
+
         order.setEstimatedArrivalTime(orderUpdateRequest.getPickupTimeRange().get(1));
 
         List<Long> receiverAddressId = orderUpdateRequest.getReceiverAddressId();

@@ -8,6 +8,7 @@ import com.dreams.logistics.model.entity.Organization;
 
 import com.dreams.logistics.service.OrganizationService;
 import com.dreams.logistics.mapper.OrganizationMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -91,6 +92,7 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationMapper, Org
         }
         return paths;
     }
+
 }
 
 

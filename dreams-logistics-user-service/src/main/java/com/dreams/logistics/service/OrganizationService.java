@@ -23,4 +23,6 @@ public interface OrganizationService extends IService<Organization> {
     Long[] findOrganizationPath(String organizationId);
 
     List<String> findParentPath(String organizationId, List<String> paths);
+
+
 }

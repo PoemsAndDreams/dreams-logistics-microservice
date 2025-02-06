@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class OrderUpdateRequest implements Serializable {
     /**
      * 预计取件开始到达时间
      */
-    private List<Date> pickupTimeRange;
+    private List<LocalDateTime> pickupTimeRange;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

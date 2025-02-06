@@ -11,10 +11,12 @@ import com.dreams.logistics.mapper.RoleMapper;
 import com.dreams.logistics.mapper.UserMapper;
 import com.dreams.logistics.model.dto.user.UserQueryRequest;
 import com.dreams.logistics.model.entity.DcUser;
+import com.dreams.logistics.model.entity.Organization;
 import com.dreams.logistics.model.entity.Role;
 import com.dreams.logistics.enums.UserRoleEnum;
 import com.dreams.logistics.model.vo.LoginUserVO;
 import com.dreams.logistics.model.vo.UserVO;
+import com.dreams.logistics.service.OrganizationService;
 import com.dreams.logistics.service.UserService;
 import com.dreams.logistics.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
     @Resource
     private RoleMapper roleMapper;
 
+    @Resource
+    private OrganizationService organizationService;
 
     @Override
     public long userRegister(String userAccount, String userPassword) {
@@ -204,6 +208,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
             dcUser.setUserPassword(null);
             UserVO userVO = new UserVO();
             BeanUtils.copyProperties(dcUser, userVO);
+            Organization organization = organizationService.getById(dcUser.getOrgId());
+            userVO.setOrgName(organization.getName());
             return userVO;
         }).collect(Collectors.toList());
     }
@@ -220,10 +226,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
         String userRole = userQueryRequest.getUserRole();
         String sortField = userQueryRequest.getSortField();
         String sortOrder = userQueryRequest.getSortOrder();
+        Long orgId = userQueryRequest.getOrgId();
+        String phone = userQueryRequest.getPhone();
         QueryWrapper<DcUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(id != null, "id", id);
+        queryWrapper.eq(orgId != null, "orgId", orgId);
         queryWrapper.eq(StringUtils.isNotBlank(userAccount), "user_account", userAccount);
         queryWrapper.eq(StringUtils.isNotBlank(userRole), "user_role", userRole);
+        queryWrapper.eq(StringUtils.isNotBlank(phone), "phone", phone);
         queryWrapper.eq(StringUtils.isNotBlank(userRole), "user_role", userRole);
         queryWrapper.like(StringUtils.isNotBlank(userProfile), "user_profile", userProfile);
         queryWrapper.like(StringUtils.isNotBlank(userName), "user_name", userName);

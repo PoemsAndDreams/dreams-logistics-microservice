@@ -78,4 +78,6 @@ public interface TransportLineService {
      * @return 路线数据
      */
     TransportLine queryById(Long id);
+
+    TransportLineNode queryPathByDispatchMethod(Long startId, Long endId);
 }

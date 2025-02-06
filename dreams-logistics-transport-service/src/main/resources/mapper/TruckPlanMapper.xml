@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.TruckPlanMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.TruckPlan">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="truckId" column="truck_id" jdbcType="BIGINT"/>
+            <result property="transportTripsId" column="transport_trips_id" jdbcType="BIGINT"/>
+            <result property="driverIds" column="driver_ids" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="planDepartureTime" column="plan_departure_time" jdbcType="TIMESTAMP"/>
+            <result property="planArrivalTime" column="plan_arrival_time" jdbcType="TIMESTAMP"/>
+            <result property="scheduleStatus" column="schedule_status" jdbcType="TINYINT"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,truck_id,transport_trips_id,
+        driver_ids,status,plan_departure_time,
+        plan_arrival_time,schedule_status,created,
+        updated
+    </sql>
+</mapper>

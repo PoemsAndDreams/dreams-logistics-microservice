@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.OrderLocationMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.OrderLocation">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="sendLocation" column="send_location" jdbcType="VARCHAR"/>
+            <result property="receiveLocation" column="receive_location" jdbcType="VARCHAR"/>
+            <result property="sendAgentId" column="send_agent_id" jdbcType="VARCHAR"/>
+            <result property="receiveAgentId" column="receive_agent_id" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_id,send_location,
+        receive_location,send_agent_id,receive_agent_id,
+        status,created,updated
+    </sql>
+</mapper>

@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.dreams.logistics.mapper.MenuMapper;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.Menu;
+import com.dreams.logistics.model.entity.Organization;
 import com.dreams.logistics.service.CheckCodeService;
+import com.dreams.logistics.service.OrganizationService;
 import com.dreams.logistics.service.UserFeignClient;
 import com.dreams.logistics.service.UserService;
 import com.dreams.logistics.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -19,7 +22,7 @@ import java.util.List;
  * 用户接口
  */
 @RestController
-@RequestMapping("/inner")
+@RequestMapping("/user/inner")
 @Slf4j
 public class UserInnerController implements UserFeignClient {
 
@@ -28,6 +31,9 @@ public class UserInnerController implements UserFeignClient {
 
     @Resource
     private MenuMapper menuMapper;
+
+    @Resource
+    private OrganizationService organizationService;
 
     @Resource(name = "PicCheckCodeService")
     private CheckCodeService picCheckCodeService;
@@ -84,4 +90,13 @@ public class UserInnerController implements UserFeignClient {
     public List<Menu> selectPermissionByUserId(@RequestParam("userId") String userId) {
         return menuMapper.selectPermissionByUserId(userId);
     }
+
+
+    @Override
+    @PostMapping("/addUser")
+    public Boolean addUser(@RequestBody DcUser user) {
+        return userService.save(user);
+    }
+
+
 }

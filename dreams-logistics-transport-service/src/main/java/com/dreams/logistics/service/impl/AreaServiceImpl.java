@@ -138,6 +138,13 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area>
         return areaVOS;
     }
 
+    @Override
+    public Area findById(Long id) {
+        LambdaQueryWrapper<Area> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Area::getId,id);
+        return this.getOne(wrapper);
+    }
+
 }
 
 

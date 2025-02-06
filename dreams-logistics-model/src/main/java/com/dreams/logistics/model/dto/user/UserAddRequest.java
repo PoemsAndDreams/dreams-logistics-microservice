@@ -26,6 +26,16 @@ public class UserAddRequest implements Serializable {
     private String userAvatar;
 
     /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 所属机构id
+     */
+    private Long orgId;
+
+    /**
      * 简介
      */
     private String userProfile;

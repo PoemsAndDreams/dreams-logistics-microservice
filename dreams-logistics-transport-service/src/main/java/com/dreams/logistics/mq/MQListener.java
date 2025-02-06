@@ -1,4 +1,4 @@
-package com.dreams.logistics.config;
+package com.dreams.logistics.mq;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.TypeReference;

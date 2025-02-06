@@ -169,17 +169,17 @@ public class Order implements Serializable {
     /**
      * 下单时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * 预计取件开始时间
      */
-    private Date estimatedStartTime;
+    private LocalDateTime estimatedStartTime;
 
     /**
      * 预计到达时间
      */
-    private Date estimatedArrivalTime;
+    private LocalDateTime estimatedArrivalTime;
 
     @TableField(fill = FieldFill.INSERT) //MP自动填充
     private LocalDateTime created;

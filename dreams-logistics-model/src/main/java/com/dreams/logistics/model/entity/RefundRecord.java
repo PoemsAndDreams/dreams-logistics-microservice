@@ -9,7 +9,10 @@ import java.util.Date;
 
 import com.dreams.logistics.enums.RefundStatusEnum;
 import com.dreams.logistics.enums.TradingStateEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 退款记录表
@@ -79,9 +82,16 @@ public class RefundRecord implements Serializable {
      */
     private BigDecimal total;
 
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT) //MP自动填充
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
+
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
 
     @TableField(exist = false)

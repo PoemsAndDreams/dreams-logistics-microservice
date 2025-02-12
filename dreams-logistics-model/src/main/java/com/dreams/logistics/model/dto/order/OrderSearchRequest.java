@@ -1,10 +1,14 @@
 package com.dreams.logistics.model.dto.order;
 
 import com.dreams.logistics.common.PageRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -102,6 +106,9 @@ public class OrderSearchRequest extends PageRequest implements Serializable {
     /**
      * 预计取件开始到达时间
      */
+//    @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+//    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private List<Date> pickupTimeRange;
 
 

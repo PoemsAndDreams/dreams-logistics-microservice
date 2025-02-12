@@ -3,7 +3,10 @@ package com.dreams.logistics.model.dto.order;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -90,7 +93,10 @@ public class OrderUpdateRequest implements Serializable {
     /**
      * 预计取件开始到达时间
      */
-    private List<LocalDateTime> pickupTimeRange;
+    @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private List<Date> pickupTimeRange;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

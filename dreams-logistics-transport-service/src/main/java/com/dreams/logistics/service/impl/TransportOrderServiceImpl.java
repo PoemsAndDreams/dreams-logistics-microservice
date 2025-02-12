@@ -62,6 +62,9 @@ public class TransportOrderServiceImpl extends ServiceImpl<TransportOrderMapper,
     private OrderService orderService;
 
     @Resource
+    private UserFeignClient userFeignClient;
+
+    @Resource
     private OrderCargoService orderCargoService;
 
     @Resource
@@ -69,9 +72,6 @@ public class TransportOrderServiceImpl extends ServiceImpl<TransportOrderMapper,
     
     @Resource
     private TransportLineService transportLineService;
-
-    @Resource
-    private OrgFeignClient orgFeignClient;
 
 
     @Resource
@@ -287,7 +287,7 @@ public class TransportOrderServiceImpl extends ServiceImpl<TransportOrderMapper,
             transportOrderList = ids.stream().map(id -> {
                 //获取将发往的目的地机构
                 Long nextAgencyId = this.getById(id).getNextAgencyId();
-                Organization organDTO = orgFeignClient.getOrganizationById(String.valueOf(nextAgencyId));
+                Organization organDTO = userFeignClient.getOrganizationById(String.valueOf(nextAgencyId));
 
                 //构建消息实体类
                 String info = CharSequenceUtil.format("快件发往【{}】", organDTO.getName());
@@ -342,7 +342,7 @@ public class TransportOrderServiceImpl extends ServiceImpl<TransportOrderMapper,
 
         //查询运单中下个机构的信息
         List<Long> nextAgencyIds = transportOrderList.stream().map(TransportOrder::getNextAgencyId).distinct().filter(Objects::nonNull).collect(Collectors.toList());
-        List<Organization> organDTOS = orgFeignClient.queryByIds(nextAgencyIds);
+        List<Organization> organDTOS = userFeignClient.queryByIds(nextAgencyIds);
         Map<String, Organization> organMap = organDTOS.stream().collect(Collectors.toMap(Organization::getId, dto -> dto));
 
         for (TransportOrder transportOrder : transportOrderList) {

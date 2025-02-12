@@ -40,12 +40,12 @@ public class TruckTrips implements Serializable {
     /**
      * 发车时间
      */
-    private String departureTime;
+    private Integer departureTime;
 
     /**
      * 预计时间（分钟）
      */
-    private BigDecimal estimatedTime;
+    private Integer estimatedTime;
 
     /**
      * 状态  0：禁用   1：正常

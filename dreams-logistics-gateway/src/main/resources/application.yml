@@ -28,6 +28,14 @@ spring:
           uri: lb://dreams-logistics-transport-service
           predicates:
             - Path=/api/transport/**
+        - id: dreams-logistics-user-service-user
+          uri: lb://dreams-logistics-user-service
+          predicates:
+            - Path=/api/user/user/inner**
+        - id: dreams-logistics-user-service-org
+          uri: lb://dreams-logistics-user-service
+          predicates:
+            - Path=/api/user/org/inner**
   redis:
     database: 1
     host: localhost

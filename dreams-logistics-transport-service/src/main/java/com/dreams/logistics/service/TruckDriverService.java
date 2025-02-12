@@ -1,5 +1,6 @@
 package com.dreams.logistics.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.TruckDriver;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -18,4 +19,13 @@ public interface TruckDriverService extends IService<TruckDriver> {
     Boolean deleteDriver(long id, long driverId);
 
     Boolean addDriver(long id, long driverId);
+
+    List<TruckDriver> findAll(List<Long> userIds);
+
+    TruckDriver findOne(Long userId);
+
+    List<TruckDriver> findByTruckId(Long truckId);
+
+    void disableTruckId(Long truckId);
+
 }

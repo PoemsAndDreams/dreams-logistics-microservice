@@ -1,6 +1,9 @@
 package com.dreams.logistics.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -66,11 +69,17 @@ public class CarriageVO {
     /**
      * 创建时间
      */
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
 
     /**
      * 更新时间
      */
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updated;
 
     private Double expense;

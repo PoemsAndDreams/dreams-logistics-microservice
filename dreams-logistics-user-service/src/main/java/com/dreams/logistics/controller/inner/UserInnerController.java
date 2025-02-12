@@ -22,7 +22,7 @@ import java.util.List;
  * 用户接口
  */
 @RestController
-@RequestMapping("/user/inner")
+@RequestMapping("/inner")
 @Slf4j
 public class UserInnerController implements UserFeignClient {
 
@@ -38,6 +38,22 @@ public class UserInnerController implements UserFeignClient {
     @Resource(name = "PicCheckCodeService")
     private CheckCodeService picCheckCodeService;
 
+
+    @Override
+    @PostMapping("/getOrganizationById")
+    public Organization getOrganizationById(@RequestParam("id") String id){
+        if (StringUtils.isNotEmpty(id)){
+            return organizationService.getById(id);
+        }
+        return null;
+    }
+
+    @Override
+    @PostMapping("/queryByIds")
+    public List<Organization> queryByIds(@RequestParam("nextAgencyIds") List<Long> nextAgencyIds){
+        return organizationService.listByIds(nextAgencyIds);
+
+    }
     @Override
     @GetMapping("/get/id")
     public DcUser getById(long userId) {

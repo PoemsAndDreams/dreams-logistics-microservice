@@ -5,8 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 运输任务表
@@ -104,7 +109,10 @@ public class TransportTask implements Serializable {
     /**
      * 计划发车时间
      */
-    private Date planDepartureTime;
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime planDepartureTime;
 
     /**
      * 实际发车时间

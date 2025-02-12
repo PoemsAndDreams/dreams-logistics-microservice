@@ -5,8 +5,16 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 车辆计划表
@@ -14,6 +22,9 @@ import lombok.Data;
  */
 @TableName(value ="truck_plan")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TruckPlan implements Serializable {
     /**
      * id
@@ -44,12 +55,18 @@ public class TruckPlan implements Serializable {
     /**
      * 计划发车时间
      */
-    private Date planDepartureTime;
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime planDepartureTime;
 
     /**
      * 计划到达时间
      */
-    private Date planArrivalTime;
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime planArrivalTime;
 
     /**
      * 计划调度状态，0-待分配，1-已分配，2已调度

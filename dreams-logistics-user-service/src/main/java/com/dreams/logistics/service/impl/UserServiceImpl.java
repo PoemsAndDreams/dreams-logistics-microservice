@@ -5,18 +5,24 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dreams.logistics.common.ErrorCode;
 import com.dreams.logistics.constant.CommonConstant;
+import com.dreams.logistics.enums.WorkScheduleEnum;
 import com.dreams.logistics.exception.BusinessException;
 import com.dreams.logistics.exception.ThrowUtils;
 import com.dreams.logistics.mapper.RoleMapper;
 import com.dreams.logistics.mapper.UserMapper;
 import com.dreams.logistics.model.dto.user.UserQueryRequest;
+import com.dreams.logistics.model.dto.user.UserUpdateRequest;
+import com.dreams.logistics.model.dto.workSchedule.WorkScheduleAddRequest;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.Organization;
 import com.dreams.logistics.model.entity.Role;
 import com.dreams.logistics.enums.UserRoleEnum;
+import com.dreams.logistics.model.entity.WorkSchedule;
 import com.dreams.logistics.model.vo.LoginUserVO;
 import com.dreams.logistics.model.vo.UserVO;
 import com.dreams.logistics.service.OrganizationService;
+import com.dreams.logistics.service.RoleService;
+import com.dreams.logistics.service.TransportFeignClient;
 import com.dreams.logistics.service.UserService;
 import com.dreams.logistics.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +36,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.dreams.logistics.constant.UserConstant.USER_LOGIN_STATE;
@@ -46,6 +53,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
 
     @Resource
     private OrganizationService organizationService;
+
+
+    @Resource
+    private RoleService roleService;
+
+    @Resource
+    private TransportFeignClient transportFeignClient;
 
     @Override
     public long userRegister(String userAccount, String userPassword) {
@@ -254,7 +268,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
         dcUser.setUserRole(role.getRoleCode());
 
         boolean result = this.save(dcUser);
+        if (result && (Objects.equals(dcUser.getUserRole(), UserRoleEnum.COURIER.getValue()) || Objects.equals(dcUser.getUserRole(), UserRoleEnum.DRIVER.getValue() ))){
+            WorkScheduleAddRequest workScheduleAddRequest = new WorkScheduleAddRequest();
+            workScheduleAddRequest.setUserId(dcUser.getId());
+            workScheduleAddRequest.setWeekSchedule(WorkScheduleEnum.YES_STATUS.getStatus());
+            transportFeignClient.add(workScheduleAddRequest);
+        }
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return dcUser;
+    }
+
+    @Override
+    public boolean updateUser(UserUpdateRequest userUpdateRequest) {
+        if (StringUtils.isNotEmpty(userUpdateRequest.getUserPassword())){
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String encryptPassword = passwordEncoder.encode(userUpdateRequest.getUserPassword());
+            userUpdateRequest.setUserPassword(encryptPassword);
+        }
+        DcUser dcUser = this.getById(userUpdateRequest.getId());
+
+        if (Objects.equals(dcUser.getUserRole(), UserRoleEnum.USER.getValue()) && (Objects.equals(userUpdateRequest.getUserRole(), UserRoleEnum.COURIER.getValue()) || Objects.equals(userUpdateRequest.getUserRole(), UserRoleEnum.DRIVER.getValue() ))){
+            WorkScheduleAddRequest workScheduleAddRequest = new WorkScheduleAddRequest();
+            workScheduleAddRequest.setUserId(dcUser.getId());
+            workScheduleAddRequest.setWeekSchedule(WorkScheduleEnum.YES_STATUS.getStatus());
+            transportFeignClient.add(workScheduleAddRequest);
+        }
+
+        BeanUtils.copyProperties(userUpdateRequest, dcUser);
+
+        Role role = roleService.getById(dcUser.getUserRole());
+        if (!Objects.isNull(role)){
+            dcUser.setUserRole(role.getRoleCode());
+        }
+
+        return this.updateById(dcUser);
     }
 }

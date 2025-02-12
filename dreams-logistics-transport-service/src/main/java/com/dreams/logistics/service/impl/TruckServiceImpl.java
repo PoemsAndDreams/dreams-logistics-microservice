@@ -2,17 +2,19 @@ package com.dreams.logistics.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dreams.logistics.common.ErrorCode;
 import com.dreams.logistics.constant.CommonConstant;
+import com.dreams.logistics.enums.StatusEnum;
+import com.dreams.logistics.enums.TruckRunStatusEnum;
 import com.dreams.logistics.exception.BusinessException;
 import com.dreams.logistics.model.dto.truck.TruckQueryRequest;
 import com.dreams.logistics.model.entity.Truck;
 import com.dreams.logistics.model.entity.Organization;
-import com.dreams.logistics.model.entity.Truck;
 import com.dreams.logistics.model.vo.TruckVO;
-import com.dreams.logistics.service.OrgFeignClient;
 import com.dreams.logistics.service.TruckService;
 import com.dreams.logistics.mapper.TruckMapper;
 import com.dreams.logistics.service.UserFeignClient;
@@ -36,8 +38,7 @@ import java.util.stream.Collectors;
 @Service
 public class TruckServiceImpl extends ServiceImpl<TruckMapper, Truck>
     implements TruckService{
-    @Resource
-    private OrgFeignClient orgFeignClient;
+
     @Resource
     private UserFeignClient userFeignClient;
 
@@ -63,16 +64,16 @@ public class TruckServiceImpl extends ServiceImpl<TruckMapper, Truck>
         String sortOrder = truckQueryRequest.getSortOrder();
 
         QueryWrapper<Truck> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq( truckTypeId != null, "truckTypeId",  truckTypeId);
-        queryWrapper.eq( currentOrganId != null, "currentOrganId",  currentOrganId);
-        queryWrapper.eq( runStatus != null, "runStatus",  runStatus);
+        queryWrapper.eq( truckTypeId != null, "truck_type_id",  truckTypeId);
+        queryWrapper.eq( currentOrganId != null, "current_organ_id",  currentOrganId);
+        queryWrapper.eq( runStatus != null, "run_status",  runStatus);
         queryWrapper.eq( status != null, "status",  status);
-        queryWrapper.eq( workStatus != null, "workStatus",  workStatus);
-        queryWrapper.eq( loadingRatio != null, "loadingRatio",  loadingRatio);
-        queryWrapper.eq( allowableLoad != null, "allowableLoad",  allowableLoad);
-        queryWrapper.eq( allowableVolume != null, "allowableVolume",  allowableVolume);
+        queryWrapper.eq( workStatus != null, "work_status",  workStatus);
+        queryWrapper.eq( loadingRatio != null, "loading_ratio",  loadingRatio);
+        queryWrapper.eq( allowableLoad != null, "allowable_load",  allowableLoad);
+        queryWrapper.eq( allowableVolume != null, "allowable_volume",  allowableVolume);
         queryWrapper.eq(StringUtils.isNotBlank(brand), "brand",brand);
-        queryWrapper.eq(StringUtils.isNotBlank(licensePlate), "licensePlate", licensePlate);
+        queryWrapper.eq(StringUtils.isNotBlank(licensePlate), "license_plate", licensePlate);
 
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
@@ -87,7 +88,7 @@ public class TruckServiceImpl extends ServiceImpl<TruckMapper, Truck>
         TruckVO truckVO = new TruckVO();
         BeanUtils.copyProperties(truck, truckVO);
         // 补充字段
-        Organization organization =  orgFeignClient.getOrganizationById(truck.getCurrentOrganId().toString());
+        Organization organization =  userFeignClient.getOrganizationById(truck.getCurrentOrganId().toString());
         if (!Objects.isNull(organization)){
             truckVO.setCurrentOrganName(organization.getName());
         }
@@ -104,7 +105,7 @@ public class TruckServiceImpl extends ServiceImpl<TruckMapper, Truck>
             TruckVO truckVO = new TruckVO();
             BeanUtils.copyProperties(truck, truckVO);
             if (!Objects.isNull(truck.getCurrentOrganId())){
-                Organization organization =  orgFeignClient.getOrganizationById(truck.getCurrentOrganId().toString());
+                Organization organization =  userFeignClient.getOrganizationById(truck.getCurrentOrganId().toString());
                 if (!Objects.isNull(organization)){
                     truckVO.setCurrentOrganName(organization.getName());
                 }
@@ -113,6 +114,29 @@ public class TruckServiceImpl extends ServiceImpl<TruckMapper, Truck>
             return truckVO;
         }).collect(Collectors.toList());
 
+    }
+
+    @Override
+    public Boolean updateCurrentOrganId(Long truckId, Long currentOrganId, StatusEnum statusEnum) {
+        UpdateWrapper<Truck> wrapper = new UpdateWrapper<>();
+
+        wrapper.lambda()
+                // 更新位置
+                .set(Truck::getCurrentOrganId, currentOrganId)
+                // 更新车辆状态
+                .set(Truck::getRunStatus, TruckRunStatusEnum.ARRIVED.getCode())
+                // 禁用状态
+                .set(Truck::getStatus, statusEnum.getCode())
+                .eq(Truck::getId, truckId);
+        return super.update(wrapper);
+
+    }
+
+    @Override
+    public Truck getTruck(String licensePlate) {
+        LambdaQueryWrapper<Truck> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Truck::getLicensePlate,licensePlate);
+        return this.getOne(wrapper);
     }
 }
 

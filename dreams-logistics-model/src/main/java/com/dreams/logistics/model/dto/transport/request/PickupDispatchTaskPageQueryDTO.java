@@ -2,6 +2,7 @@ package com.dreams.logistics.model.dto.transport.request;
 
 import com.dreams.logistics.enums.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -63,6 +64,7 @@ public class PickupDispatchTaskPageQueryDTO {
     /**
      * 最小预计完成时间
      */
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime minEstimatedEndTime;
@@ -70,6 +72,7 @@ public class PickupDispatchTaskPageQueryDTO {
     /**
      * 最大预计完成时间
      */
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime maxEstimatedEndTime;
@@ -77,6 +80,7 @@ public class PickupDispatchTaskPageQueryDTO {
     /**
      * 最小实际完成时间
      */
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime minActualEndTime;
@@ -84,6 +88,7 @@ public class PickupDispatchTaskPageQueryDTO {
     /**
      * 最大实际完成时间
      */
+   @ApiModelProperty(example = "2022-08-15 00:00:00", dataType = "string")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime maxActualEndTime;

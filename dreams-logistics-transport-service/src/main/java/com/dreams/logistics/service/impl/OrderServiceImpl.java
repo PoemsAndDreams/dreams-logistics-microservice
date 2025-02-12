@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -119,8 +120,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         Order order = new Order();
         BeanUtils.copyProperties(orderAddRequest, order);
 
-        order.setEstimatedStartTime(orderAddRequest.getPickupTimeRange().get(0));
-        order.setEstimatedArrivalTime(orderAddRequest.getPickupTimeRange().get(1));
+        LocalDateTime timeOne = LocalDateTime.ofInstant(orderAddRequest.getPickupTimeRange().get(0).toInstant(), ZoneId.systemDefault());
+        LocalDateTime timeTwo = LocalDateTime.ofInstant(orderAddRequest.getPickupTimeRange().get(1).toInstant(), ZoneId.systemDefault());
+
+        order.setEstimatedStartTime(timeOne);
+        order.setEstimatedArrivalTime(timeTwo);
 
         List<Long> receiverAddressId = orderAddRequest.getReceiverAddressId();
         order.setReceiverProvinceId(receiverAddressId.get(0));
@@ -180,9 +184,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         String[] split = orderLocation.getSendLocation().split(",");
         double lnt = Double.parseDouble(split[0]);
         double lat = Double.parseDouble(split[1]);
+
+        LocalDateTime estimatedArrivalTime = orderEntity.getEstimatedArrivalTime();
+
         OrderMsg orderMsg = OrderMsg.builder()
                 .created(LocalDateTimeUtil.toEpochMilli(orderEntity.getCreateTime()))
-                .estimatedEndTime(orderEntity.getEstimatedStartTime())
+                .estimatedEndTime(estimatedArrivalTime)
                 .mark(orderEntity.getMark())
                 .taskType(PickupDispatchTaskType.PICKUP.getCode())
                 .latitude(lat)
@@ -190,6 +197,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
                 .agencyId(orderEntity.getCurrentAgencyId())
                 .orderId(orderEntity.getId())
                 .build();
+
+
         //发送消息
         this.mqFeign.sendMsg(Constants.MQ.Exchanges.ORDER_DELAYED, Constants.MQ.RoutingKeys.ORDER_CREATE, orderMsg.toJson(), Constants.MQ.LOW_DELAY);
     }
@@ -389,9 +398,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
         Order order = orderService.getById(orderUpdateRequest.getId());
         BeanUtils.copyProperties(orderUpdateRequest, order);
-        order.setEstimatedStartTime(orderUpdateRequest.getPickupTimeRange().get(0));
 
-        order.setEstimatedArrivalTime(orderUpdateRequest.getPickupTimeRange().get(1));
+
+        LocalDateTime timeOne = LocalDateTime.ofInstant(orderUpdateRequest.getPickupTimeRange().get(0).toInstant(), ZoneId.systemDefault());
+        LocalDateTime timeTwo = LocalDateTime.ofInstant(orderUpdateRequest.getPickupTimeRange().get(1).toInstant(), ZoneId.systemDefault());
+
+        order.setEstimatedStartTime(timeOne);
+        order.setEstimatedArrivalTime(timeTwo);
 
         List<Long> receiverAddressId = orderUpdateRequest.getReceiverAddressId();
         order.setReceiverProvinceId(receiverAddressId.get(0));

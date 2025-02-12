@@ -13,6 +13,8 @@ public enum UserRoleEnum {
 
     USER("用户", "user"),
     ADMIN("管理员", "admin"),
+    COURIER("快递员", "courier"),
+    DRIVER("司机", "driver"),
     BAN("被封号", "ban");
 
     private final String text;

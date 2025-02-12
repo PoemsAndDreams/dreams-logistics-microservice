@@ -5,15 +5,19 @@ import com.dreams.logistics.common.BaseResponse;
 import com.dreams.logistics.common.DeleteRequest;
 import com.dreams.logistics.common.ErrorCode;
 import com.dreams.logistics.common.ResultUtils;
+import com.dreams.logistics.enums.UserRoleEnum;
+import com.dreams.logistics.enums.WorkScheduleEnum;
 import com.dreams.logistics.exception.BusinessException;
 import com.dreams.logistics.exception.ThrowUtils;
 import com.dreams.logistics.model.dto.user.*;
+import com.dreams.logistics.model.dto.workSchedule.WorkScheduleAddRequest;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.Role;
 import com.dreams.logistics.model.vo.AllUserVO;
 import com.dreams.logistics.model.vo.LoginUserVO;
 import com.dreams.logistics.model.vo.UserVO;
 import com.dreams.logistics.service.RoleService;
+import com.dreams.logistics.service.TransportFeignClient;
 import com.dreams.logistics.service.UserService;
 import com.dreams.logistics.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +45,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private RoleService roleService;
-
-    // region 登录相关
 
     /**
      * 用户注册
@@ -84,41 +84,6 @@ public class UserController {
         return ResultUtils.success(result);
     }
 
-//    /**
-//     * 用户登录
-//     *
-//     * @param userLoginRequest
-//     * @param request
-//     * @return
-//     */
-//    @PostMapping("/login")
-//    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
-//        if (userLoginRequest == null) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        String userAccount = userLoginRequest.getUserAccount();
-//        String userPassword = userLoginRequest.getUserPassword();
-//        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
-//        return ResultUtils.success(loginUserVO);
-//    }
-
-//    /**
-//     * 用户注销
-//     *
-//     * @param request
-//     * @return
-//     */
-//    @PostMapping("/logout")
-//    public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
-//        if (request == null) {
-//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-//        }
-//        boolean result = userService.userLogout(request);
-//        return ResultUtils.success(result);
-//    }
 
     /**
      * 获取当前登录用户
@@ -188,20 +153,9 @@ public class UserController {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if (StringUtils.isNotEmpty(userUpdateRequest.getUserPassword())){
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String encryptPassword = passwordEncoder.encode(userUpdateRequest.getUserPassword());
-            userUpdateRequest.setUserPassword(encryptPassword);
-        }
-        DcUser dcUser = userService.getById(userUpdateRequest.getId());
-        BeanUtils.copyProperties(userUpdateRequest, dcUser);
 
-        Role role = roleService.getById(dcUser.getUserRole());
-        if (!Objects.isNull(role)){
-            dcUser.setUserRole(role.getRoleCode());
-        }
+        boolean result = userService.updateUser(userUpdateRequest);
 
-        boolean result = userService.updateById(dcUser);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }

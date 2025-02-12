@@ -22,7 +22,7 @@ import static com.dreams.logistics.constant.UserConstant.USER_LOGIN_STATE;
  * 用户服务
  *
  */
-@FeignClient(name = "dreams-logistics-user-service-use",path = "/api/user/user/inner")
+@FeignClient(name = "dreams-logistics-user-service",path = "/api/user/inner")
 public interface UserFeignClient {
 
 
@@ -123,6 +123,14 @@ public interface UserFeignClient {
 
     @PostMapping("/addUser")
     Boolean addUser(@RequestBody DcUser user);
+
+
+    @PostMapping("/getOrganizationById")
+    Organization getOrganizationById(@RequestParam("id") String id);
+
+    @PostMapping("/queryByIds")
+    List<Organization> queryByIds(@RequestParam("nextAgencyIds") List<Long> nextAgencyIds);
+
 }
 
 

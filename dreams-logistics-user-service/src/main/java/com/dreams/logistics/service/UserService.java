@@ -3,6 +3,7 @@ package com.dreams.logistics.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.dreams.logistics.model.dto.user.UserQueryRequest;
+import com.dreams.logistics.model.dto.user.UserUpdateRequest;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.vo.LoginUserVO;
 import com.dreams.logistics.model.vo.UserVO;
@@ -107,4 +108,5 @@ public interface UserService extends IService<DcUser> {
 
     DcUser saveUser(DcUser dcUser);
 
+    boolean updateUser(UserUpdateRequest userUpdateRequest);
 }

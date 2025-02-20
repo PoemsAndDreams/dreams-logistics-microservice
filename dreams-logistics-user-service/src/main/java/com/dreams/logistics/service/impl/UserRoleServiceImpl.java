@@ -1,5 +1,6 @@
 package com.dreams.logistics.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dreams.logistics.model.entity.UserRole;
 import com.dreams.logistics.service.UserRoleService;
@@ -15,6 +16,12 @@ import org.springframework.stereotype.Service;
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole>
     implements UserRoleService{
 
+    @Override
+    public UserRole getByUserId(String id) {
+        LambdaQueryWrapper<UserRole> userRoleLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userRoleLambdaQueryWrapper.eq(UserRole::getUserId,id);
+        return this.getOne(userRoleLambdaQueryWrapper);
+    }
 }
 
 

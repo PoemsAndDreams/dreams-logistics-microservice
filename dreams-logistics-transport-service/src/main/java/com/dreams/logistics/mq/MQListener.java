@@ -6,11 +6,13 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 
 import com.dreams.logistics.common.Constants;
-import com.dreams.logistics.enums.OrderPaymentStatus;
-import com.dreams.logistics.enums.RefundStatusEnum;
-import com.dreams.logistics.enums.TradingStateEnum;
+import com.dreams.logistics.enums.*;
 import com.dreams.logistics.model.dto.msg.TradeStatusMsg;
+import com.dreams.logistics.model.dto.msg.TransportOrderStatusMsg;
+import com.dreams.logistics.model.dto.transport.TransportOrderDTO;
+import com.dreams.logistics.model.entity.TransportOrder;
 import com.dreams.logistics.service.OrderService;
+import com.dreams.logistics.service.TransportOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -33,46 +35,48 @@ public class MQListener {
     @Resource
     private OrderService orderService;
 
-//
-//    /**
-//     * 更新运单状态
-//     *
-//     * @param msg 消息
-//     */
-//    @RabbitListener(bindings = @QueueBinding(
-//            value = @Queue(name = Constants.MQ.Queues.OMS_TRANSPORT_ORDER_UPDATE_STATUS),
-//            exchange = @Exchange(name = Constants.MQ.Exchanges.TRANSPORT_ORDER_DELAYED, type = ExchangeTypes.TOPIC, delayed = Constants.MQ.DELAYED),
-//            key = Constants.MQ.RoutingKeys.TRANSPORT_ORDER_UPDATE_STATUS_PREFIX + "#"
-//    ))
-//    public void listenTransportOrderUpdateStatusMsg(String msg) {
-//        log.info("接收到更新运单状态的消息 ({})-> {}", Constants.MQ.Queues.OMS_TRANSPORT_ORDER_UPDATE_STATUS, msg);
-//        TransportOrderStatusMsg transportOrderStatusMsg = JSONUtil.toBean(msg, TransportOrderStatusMsg.class);
-//        // 具体业务逻辑的处理
-//        if (ObjectUtil.isEmpty(transportOrderStatusMsg.getStatusCode())) {
-//            // 无状态值 不处理
-//            return;
-//        }
-//        Integer status = getOrderStatusByTransportOrderStatus(transportOrderStatusMsg.getStatusCode());
-//        List<TransportOrderDTO> list = transportOrderFeign.findByIds(transportOrderStatusMsg.getIdList().toArray(String[]::new));
-//        this.orderService.updateStatus(list.stream().map(TransportOrderDTO::getOrderId).collect(Collectors.toList()), status);
-//    }
+    @Resource
+    private TransportOrderService transportOrderService;
 
-//    private Integer getOrderStatusByTransportOrderStatus(Integer statusCode) {
-//        // 运输中
-//        if (TransportOrderStatus.PROCESSING.getCode().equals(statusCode)) {
-//           return OrderStatus.IN_TRANSIT.getCode();
-//        }
-//        // 派送中
-//        if (TransportOrderStatus.ARRIVED_END.getCode().equals(statusCode)) {
-//            return OrderStatus.DISPATCHING.getCode();
-//        }
-//        // 已拒收
-//        if (TransportOrderStatus.REJECTED.getCode().equals(statusCode)) {
-//            return OrderStatus.REJECTION.getCode();
-//        }
-//        // 默认已关闭
-//        return OrderStatus.CLOSE.getCode();
-//    }
+    /**
+     * 更新运单状态
+     *
+     * @param msg 消息
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = Constants.MQ.Queues.OMS_TRANSPORT_ORDER_UPDATE_STATUS),
+            exchange = @Exchange(name = Constants.MQ.Exchanges.TRANSPORT_ORDER_DELAYED, type = ExchangeTypes.TOPIC, delayed = Constants.MQ.DELAYED),
+            key = Constants.MQ.RoutingKeys.TRANSPORT_ORDER_UPDATE_STATUS_PREFIX + "#"
+    ))
+    public void listenTransportOrderUpdateStatusMsg(String msg) {
+        log.info("接收到更新运单状态的消息 ({})-> {}", Constants.MQ.Queues.OMS_TRANSPORT_ORDER_UPDATE_STATUS, msg);
+        TransportOrderStatusMsg transportOrderStatusMsg = JSONUtil.toBean(msg, TransportOrderStatusMsg.class);
+        // 具体业务逻辑的处理
+        if (ObjectUtil.isEmpty(transportOrderStatusMsg.getStatusCode())) {
+            // 无状态值 不处理
+            return;
+        }
+        Integer status = getOrderStatusByTransportOrderStatus(transportOrderStatusMsg.getStatusCode());
+        List<TransportOrder> list = transportOrderService.findByIds(transportOrderStatusMsg.getIdList().toArray(new String[0]));
+        this.orderService.updateStatus(list.stream().map(TransportOrder::getOrderId).collect(Collectors.toList()), status);
+    }
+
+    private Integer getOrderStatusByTransportOrderStatus(Integer statusCode) {
+        // 运输中
+        if (TransportOrderStatus.PROCESSING.getCode().equals(statusCode)) {
+           return OrderStatus.IN_TRANSIT.getCode();
+        }
+        // 派送中
+        if (TransportOrderStatus.ARRIVED_END.getCode().equals(statusCode)) {
+            return OrderStatus.DISPATCHING.getCode();
+        }
+        // 已拒收
+        if (TransportOrderStatus.REJECTED.getCode().equals(statusCode)) {
+            return OrderStatus.REJECTION.getCode();
+        }
+        // 默认已关闭
+        return OrderStatus.CLOSE.getCode();
+    }
 
     /**
      * 更新支付结果

@@ -1,4 +1,4 @@
-package com.dreams.logistics.model.dto.transport;
+package com.dreams.logistics.model.dto.pickupDispatchTask;
 
 import com.dreams.logistics.enums.*;
 import com.fasterxml.jackson.annotation.JsonFormat;

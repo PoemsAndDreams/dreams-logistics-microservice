@@ -1,5 +1,9 @@
 package com.dreams.logistics.service;
 
+import com.dreams.logistics.enums.TransportTaskStatus;
+import com.dreams.logistics.model.dto.transport.TransportTaskDTO;
+import com.dreams.logistics.model.dto.transport.request.TransportTaskCompleteDTO;
+import com.dreams.logistics.model.dto.transport.request.TransportTaskStartDTO;
 import com.dreams.logistics.model.entity.TransportTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +17,17 @@ import java.util.List;
 public interface TransportTaskService extends IService<TransportTask> {
 
     List<String> queryTransportOrderIdListById(Long taskId);
+
+    TransportTaskDTO findById(Long transportTaskId);
+
+    void completeTransportTask(TransportTaskCompleteDTO transportTaskCompleteDTO);
+
+    void startTransportTask(TransportTaskStartDTO transportTaskStartDTO);
+
+    Boolean updateStatus(Long id, TransportTaskStatus status);
+
+    List<TransportTaskDTO> findAllByOrderIdOrTaskId(String transportOrderId, Long taskTransportId);
+
+    List<Long> findByAgencyId(Long startAgencyId, Long endAgencyId);
+
 }

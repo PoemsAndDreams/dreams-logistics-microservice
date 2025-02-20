@@ -99,3 +99,6 @@ knife4j:
 #        api-rule: package
 #        api-rule-resources:
 #          - com.dreams.logistics.controller
+
+baidu:
+  ak: c2QmfVpuhV4QdnZcTZyZRyT1JAkntVsr

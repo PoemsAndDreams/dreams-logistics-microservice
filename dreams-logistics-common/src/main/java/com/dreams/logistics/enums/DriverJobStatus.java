@@ -20,13 +20,17 @@ public enum DriverJobStatus implements BaseEnum {
      */
     CONFIRM(3, "改派"),
     /**
-     * 已完成，对应 已交付
+     * 已交付，对应 已交付
      */
-    COMPLETED(4, "已完成"),
+    DELIVERED(4, "已交付"),
     /**
      * 已作废
      */
-    CANCELLED(5, "已作废");
+    CANCELLED(5, "已作废"),
+    /**
+     * 已完成
+     */
+    COMPLETED(6, "已完成");
 
 
     /**

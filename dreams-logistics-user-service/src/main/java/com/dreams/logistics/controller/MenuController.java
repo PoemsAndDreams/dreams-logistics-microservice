@@ -15,7 +15,7 @@ import com.dreams.logistics.model.entity.*;
 import com.dreams.logistics.model.entity.Menu;
 import com.dreams.logistics.model.vo.Route;
 import com.dreams.logistics.service.*;
-import com.dreams.logistics.util.SecurityUtil;
+import com.dreams.logistics.utils.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;

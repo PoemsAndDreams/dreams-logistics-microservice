@@ -1,6 +1,7 @@
 package com.dreams.logistics.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dreams.logistics.common.ErrorCode;
@@ -13,17 +14,11 @@ import com.dreams.logistics.mapper.UserMapper;
 import com.dreams.logistics.model.dto.user.UserQueryRequest;
 import com.dreams.logistics.model.dto.user.UserUpdateRequest;
 import com.dreams.logistics.model.dto.workSchedule.WorkScheduleAddRequest;
-import com.dreams.logistics.model.entity.DcUser;
-import com.dreams.logistics.model.entity.Organization;
-import com.dreams.logistics.model.entity.Role;
+import com.dreams.logistics.model.entity.*;
 import com.dreams.logistics.enums.UserRoleEnum;
-import com.dreams.logistics.model.entity.WorkSchedule;
 import com.dreams.logistics.model.vo.LoginUserVO;
 import com.dreams.logistics.model.vo.UserVO;
-import com.dreams.logistics.service.OrganizationService;
-import com.dreams.logistics.service.RoleService;
-import com.dreams.logistics.service.TransportFeignClient;
-import com.dreams.logistics.service.UserService;
+import com.dreams.logistics.service.*;
 import com.dreams.logistics.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +50,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
     private OrganizationService organizationService;
 
 
+    @Resource
+    private UserRoleService userRoleService;
     @Resource
     private RoleService roleService;
 
@@ -268,6 +265,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
         dcUser.setUserRole(role.getRoleCode());
 
         boolean result = this.save(dcUser);
+        UserRole userRole = new UserRole();
+        userRole.setUserId(dcUser.getId().toString());
+        userRole.setRoleId(role.getId());
+        userRoleService.save(userRole);
         if (result && (Objects.equals(dcUser.getUserRole(), UserRoleEnum.COURIER.getValue()) || Objects.equals(dcUser.getUserRole(), UserRoleEnum.DRIVER.getValue() ))){
             WorkScheduleAddRequest workScheduleAddRequest = new WorkScheduleAddRequest();
             workScheduleAddRequest.setUserId(dcUser.getId());
@@ -300,6 +301,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, DcUser> implements 
         if (!Objects.isNull(role)){
             dcUser.setUserRole(role.getRoleCode());
         }
+
+        UserRole userRole = userRoleService.getByUserId(String.valueOf(dcUser.getId()));
+        userRole.setUserId(dcUser.getId().toString());
+        userRole.setRoleId(role.getId());
+        userRoleService.updateById(userRole);
 
         return this.updateById(dcUser);
     }

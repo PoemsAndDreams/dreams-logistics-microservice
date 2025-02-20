@@ -10,6 +10,14 @@ spring:
       username: neo4j
       password: 123456
 
+    mongodb:
+      host: localhost
+      port: 27017
+      database: logistics
+      authentication-database: admin #认证数据库
+      username: dreams
+      password: "123456"
+      auto-index-creation: true #自动创建索引
 
   rabbitmq:
     host: localhost
@@ -30,7 +38,6 @@ spring:
           multiplier: 1 #失败的等待时长倍数，下次等待时长 = multiplier * last-interval
           max-attempts: 3 #最大重试次数
           stateless: true #true无状态；false有状态。如果业务中包含事务，这里改为false
-
 
   cloud:
     nacos:
@@ -139,4 +146,8 @@ dreams:
 
 
 baidu:
-  ak: xxxx
+  ak: c2QmfVpuhV4QdnZcTZyZRyT1JAkntVsr
+
+caffeine:
+  init: 100
+  max: 10000

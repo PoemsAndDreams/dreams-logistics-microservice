@@ -42,7 +42,11 @@ public class Organization implements Serializable {
      * 部门类型 1为分公司，2为一级转运中心 3为二级转运中心 4为网点
      */
     private Integer orgType;
-
+    /**
+     * 省市区id
+     */
+    @TableField(exist = false)
+    private List<Long> addressId;
     /**
      * 省
      */
@@ -115,6 +119,11 @@ public class Organization implements Serializable {
     
     @TableField(exist = false)
     List<Organization> children;
+
+    private String longitude;
+
+
+    private String latitude;
     
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -208,4 +208,9 @@ public class Order implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 创建人
+     */
+    private Long createUser;
 }

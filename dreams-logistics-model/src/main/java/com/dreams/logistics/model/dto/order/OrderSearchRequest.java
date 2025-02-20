@@ -111,6 +111,10 @@ public class OrderSearchRequest extends PageRequest implements Serializable {
 //    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private List<Date> pickupTimeRange;
 
+    /**
+     * 创建人
+     */
+    private Long createUser;
 
     private static final long serialVersionUID = 1L;
 }

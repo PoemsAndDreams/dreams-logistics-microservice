@@ -1,6 +1,5 @@
 package com.dreams.logistics.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dreams.logistics.common.BaseResponse;
 import com.dreams.logistics.common.DeleteRequest;
@@ -11,13 +10,9 @@ import com.dreams.logistics.exception.ThrowUtils;
 import com.dreams.logistics.model.dto.organization.OrganizationAddRequest;
 import com.dreams.logistics.model.dto.organization.OrganizationQueryRequest;
 import com.dreams.logistics.model.dto.organization.OrganizationUpdateRequest;
-import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.model.entity.Organization;
-import com.dreams.logistics.model.entity.UserRole;
-import com.dreams.logistics.model.vo.Route;
 import com.dreams.logistics.service.OrganizationService;
 import com.dreams.logistics.service.UserRoleService;
-import com.dreams.logistics.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author PoemsAndDreams
@@ -64,13 +58,7 @@ public class OrganizationController {
         if (organizationAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Organization organization = new Organization();
-        if (Objects.isNull(organizationAddRequest.getParentId())){
-            organizationAddRequest.setParentId("0");
-        }
-        BeanUtils.copyProperties(organizationAddRequest, organization);
-        boolean result = organizationService.save(organization);
-        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        Organization organization = organizationService.saveOrg(organizationAddRequest);
         return ResultUtils.success(organization.getId().toString());
     }
 
@@ -106,10 +94,7 @@ public class OrganizationController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
 
-        Organization organization = organizationService.getById(organizationUpdateRequest.getId());
-        BeanUtils.copyProperties(organizationUpdateRequest, organization);
-
-        boolean result = organizationService.updateById(organization);
+        boolean result = organizationService.updateOrg(organizationUpdateRequest);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
@@ -129,20 +114,6 @@ public class OrganizationController {
         ThrowUtils.throwIf(organization == null, ErrorCode.NOT_FOUND_ERROR);
         return ResultUtils.success(organization);
     }
-
-//    /**
-//     * 根据 id 获取包装类
-//     *
-//     * @param id
-//     * @param request
-//     * @return
-//     */
-//    @GetMapping("/get/vo")
-//    public BaseResponse<OrganizationVO> getOrganizationVOById(long id, HttpServletRequest request) {
-//        BaseResponse<Organization> response = getOrganizationById(id, request);
-//        Organization organization = response.getData();
-//        return ResultUtils.success(organizationService.getOrganizationVO(organization));
-//    }
 
     /**
      * 分页获取机构列表

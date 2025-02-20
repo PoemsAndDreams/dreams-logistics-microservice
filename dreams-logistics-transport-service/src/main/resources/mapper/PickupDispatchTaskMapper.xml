@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreams.logistics.mapper.PickupDispatchTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.dreams.logistics.model.entity.PickupDispatchTask">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="orderId" column="order_id" jdbcType="BIGINT"/>
+            <result property="taskType" column="task_type" jdbcType="TINYINT"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="signStatus" column="sign_status" jdbcType="INTEGER"/>
+            <result property="assignedStatus" column="assigned_status" jdbcType="TINYINT"/>
+            <result property="signRecipient" column="sign_recipient" jdbcType="TINYINT"/>
+            <result property="agencyId" column="agency_id" jdbcType="BIGINT"/>
+            <result property="courierId" column="courier_id" jdbcType="BIGINT"/>
+            <result property="estimatedStartTime" column="estimated_start_time" jdbcType="TIMESTAMP"/>
+            <result property="actualStartTime" column="actual_start_time" jdbcType="TIMESTAMP"/>
+            <result property="estimatedEndTime" column="estimated_end_time" jdbcType="TIMESTAMP"/>
+            <result property="actualEndTime" column="actual_end_time" jdbcType="TIMESTAMP"/>
+            <result property="cancelTime" column="cancel_time" jdbcType="TIMESTAMP"/>
+            <result property="cancelReason" column="cancel_reason" jdbcType="VARCHAR"/>
+            <result property="cancelReasonDescription" column="cancel_reason_description" jdbcType="VARCHAR"/>
+            <result property="mark" column="mark" jdbcType="VARCHAR"/>
+            <result property="created" column="created" jdbcType="TIMESTAMP"/>
+            <result property="updated" column="updated" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,order_id,task_type,
+        status,sign_status,assigned_status,
+        sign_recipient,agency_id,courier_id,
+        estimated_start_time,actual_start_time,estimated_end_time,
+        actual_end_time,cancel_time,cancel_reason,
+        cancel_reason_description,mark,created,
+        updated,is_deleted
+    </sql>
+
+
+    <select id="findCountByCourierIds" resultType="com.dreams.logistics.model.dto.transport.CourierTaskCountDTO">
+        SELECT
+        COUNT(1) `count`,
+        courier_id
+        FROM pickup_dispatch_task t
+        WHERE
+        t.courier_id IN
+        <foreach collection="courierIds" item="courierId" open="(" close=")" separator=",">#{courierId}</foreach>
+        AND t.created BETWEEN #{startDateTime} AND #{endDateTime}
+        AND t.task_type = #{type}
+        GROUP BY courier_id
+    </select>
+</mapper>

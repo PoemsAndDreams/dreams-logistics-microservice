@@ -1,18 +1,12 @@
 package com.dreams.logistics.controller.inner;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.dreams.logistics.mapper.MenuMapper;
-import com.dreams.logistics.model.entity.DcUser;
-import com.dreams.logistics.model.entity.Menu;
 import com.dreams.logistics.model.entity.Organization;
 import com.dreams.logistics.service.*;
-import com.dreams.logistics.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Collection;
 import java.util.List;
 
 /**

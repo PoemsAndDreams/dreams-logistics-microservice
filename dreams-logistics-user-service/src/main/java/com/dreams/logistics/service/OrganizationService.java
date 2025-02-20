@@ -1,5 +1,7 @@
 package com.dreams.logistics.service;
 
+import com.dreams.logistics.model.dto.organization.OrganizationAddRequest;
+import com.dreams.logistics.model.dto.organization.OrganizationUpdateRequest;
 import com.dreams.logistics.model.entity.Organization;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -24,5 +26,9 @@ public interface OrganizationService extends IService<Organization> {
 
     List<String> findParentPath(String organizationId, List<String> paths);
 
+
+    Organization saveOrg(OrganizationAddRequest organizationAddRequest);
+
+    boolean updateOrg(OrganizationUpdateRequest organizationUpdateRequest);
 
 }

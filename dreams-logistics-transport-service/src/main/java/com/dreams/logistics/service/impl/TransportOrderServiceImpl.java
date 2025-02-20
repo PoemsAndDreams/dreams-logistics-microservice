@@ -347,7 +347,7 @@ public class TransportOrderServiceImpl extends ServiceImpl<TransportOrderMapper,
 
         for (TransportOrder transportOrder : transportOrderList) {
             //获取将发往的目的地机构
-            Organization organDTO = organMap.get(transportOrder.getNextAgencyId());
+            Organization organDTO = organMap.get(transportOrder.getNextAgencyId().toString());
 
             //构建消息实体类
             String info = CharSequenceUtil.format("快件到达【{}】", organDTO.getName());

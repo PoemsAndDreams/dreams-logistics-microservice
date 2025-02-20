@@ -1,6 +1,8 @@
 package com.dreams.logistics.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -12,6 +14,7 @@ import com.dreams.logistics.enums.StatusEnum;
 import com.dreams.logistics.enums.TruckRunStatusEnum;
 import com.dreams.logistics.exception.BusinessException;
 import com.dreams.logistics.model.dto.truck.TruckQueryRequest;
+import com.dreams.logistics.model.dto.truckPlan.TruckDto;
 import com.dreams.logistics.model.entity.Truck;
 import com.dreams.logistics.model.entity.Organization;
 import com.dreams.logistics.model.vo.TruckVO;
@@ -137,6 +140,23 @@ public class TruckServiceImpl extends ServiceImpl<TruckMapper, Truck>
         LambdaQueryWrapper<Truck> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Truck::getLicensePlate,licensePlate);
         return this.getOne(wrapper);
+    }
+
+    @Override
+    public TruckDto fineById(Long truckId) {
+        Truck truck = this.getById(truckId);
+        if (ObjectUtil.isEmpty(truck)) {
+            return null;
+        }
+        return BeanUtil.toBean(truck, TruckDto.class);
+    }
+
+    @Override
+    public void updateRunStatus(Long id, TruckRunStatusEnum status) {
+        Truck truck= new Truck();
+        truck.setId(id);
+        truck.setRunStatus(status.getCode());
+        super.updateById(truck);
     }
 }
 

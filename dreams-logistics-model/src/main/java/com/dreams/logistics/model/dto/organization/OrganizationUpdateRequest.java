@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 组织
@@ -39,7 +40,10 @@ public class OrganizationUpdateRequest implements Serializable {
      * 部门类型 1为分公司，2为一级转运中心 3为二级转运中心 4为网点
      */
     private Integer orgType;
-
+    /**
+     * 省市区id
+     */
+    private List<Long> addressId;
     /**
      * 省
      */

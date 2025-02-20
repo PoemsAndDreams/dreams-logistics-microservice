@@ -9,7 +9,7 @@ import com.dreams.logistics.service.CheckCodeService;
 import com.dreams.logistics.service.OrganizationService;
 import com.dreams.logistics.service.UserFeignClient;
 import com.dreams.logistics.service.UserService;
-import com.dreams.logistics.util.SecurityUtil;
+import com.dreams.logistics.utils.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;

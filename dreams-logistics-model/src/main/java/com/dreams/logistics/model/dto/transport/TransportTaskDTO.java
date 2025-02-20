@@ -3,6 +3,7 @@ package com.dreams.logistics.model.dto.transport;
 import com.dreams.logistics.enums.TransportTaskAssignedStatus;
 import com.dreams.logistics.enums.TransportTaskLoadingStatus;
 import com.dreams.logistics.enums.TransportTaskStatus;
+import com.dreams.logistics.model.entity.TransportOrder;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -147,6 +148,11 @@ public class TransportTaskDTO {
      * 运单id列表
      */
     private List<String> transportOrderIds;
+
+    /**
+     * 运单列表
+     */
+    private List<TransportOrder> transportOrders;
 
     /**
      * 运单数量

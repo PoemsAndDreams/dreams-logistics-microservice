@@ -22,4 +22,6 @@ public interface TruckPlanService extends IService<TruckPlan> {
 
     @Transactional
     void finishedPlan(Long currentOrganId, Long planId, Long truckId, StatusEnum statusEnum);
+
+    TruckPlanDto findById(Long truckPlanId);
 }

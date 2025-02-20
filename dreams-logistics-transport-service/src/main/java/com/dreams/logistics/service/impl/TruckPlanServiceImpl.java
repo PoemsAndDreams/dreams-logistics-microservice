@@ -246,4 +246,10 @@ public class TruckPlanServiceImpl extends ServiceImpl<TruckPlanMapper, TruckPlan
             }
         });
     }
+
+    @Override
+    public TruckPlanDto findById(Long truckPlanId) {
+        TruckPlan truckPlanEntity = this.getById(truckPlanId);
+        return BeanUtil.toBean(truckPlanEntity, TruckPlanDto.class);
+    }
 }

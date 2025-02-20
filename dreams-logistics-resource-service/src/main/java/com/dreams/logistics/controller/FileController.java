@@ -14,7 +14,7 @@ import com.dreams.logistics.model.dto.file.UploadFileRequest;
 import com.dreams.logistics.model.entity.DcUser;
 import com.dreams.logistics.enums.FileUploadBizEnum;
 
-import com.dreams.logistics.util.SecurityUtil;
+import com.dreams.logistics.utils.SecurityUtil;
 import com.qcloud.cos.model.PutObjectResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;

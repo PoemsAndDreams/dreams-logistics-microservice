@@ -1,5 +1,9 @@
 package com.dreams.logistics.utils;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.dreams.logistics.common.ErrorCode;
+import com.dreams.logistics.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,12 +11,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -25,6 +30,40 @@ public class BaiduMap {
     private static final String URL = "https://api.map.baidu.com/";
     private static final String DIRECTION_LITE_URL = "directionlite/v1/driving?";
     private static final String GEOCODING_URL = "geocoding/v3/?";
+
+
+    public List<Double> geocodingReturn(String address) {
+        String geocoding = "";
+        try {
+            //根据详细地址查询坐标
+            geocoding = geocoding(address);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 去掉回调函数包裹，提取 JSON 部分
+        String jsonString = geocoding.substring(geocoding.indexOf('(') + 1, geocoding.lastIndexOf(')'));
+
+        // 解析 JSON 数据
+        JSONObject jsonObject = JSONUtil.parseObj(jsonString);
+        // 获取 "result" 对象
+        JSONObject resultJson = jsonObject.getJSONObject("result");
+
+        if (ObjectUtil.isEmpty(resultJson)) {
+            log.error("地址无法定位");
+            throw new BusinessException(ErrorCode.ADDRESS_CANNOT_BE_LOCATED);
+        }
+
+        // 获取 "location" 对象
+        JSONObject locationJson = resultJson.getJSONObject("location");
+
+        // 提取经度和纬度
+        double lng = locationJson.getDouble("lng");
+        double lat = locationJson.getDouble("lat");
+
+        return Arrays.asList(lng,lat);
+    }
+
 
     public String geocoding(String address) throws IOException {
         if (StringUtils.isEmpty(address) || AK == null || AK.isEmpty()) {
@@ -60,7 +99,7 @@ public class BaiduMap {
         // 构造请求 URL
         StringBuffer urlString = new StringBuffer();
         urlString.append(URL + DIRECTION_LITE_URL);
-        
+
         return execute(urlString,params);
     }
 

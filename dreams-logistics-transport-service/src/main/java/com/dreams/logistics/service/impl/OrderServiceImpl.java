@@ -1,8 +1,10 @@
 package com.dreams.logistics.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
@@ -15,28 +17,25 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dreams.logistics.common.Constants;
 import com.dreams.logistics.common.ErrorCode;
 import com.dreams.logistics.constant.CommonConstant;
-import com.dreams.logistics.enums.OrderPaymentStatus;
-import com.dreams.logistics.enums.OrderPickupType;
-import com.dreams.logistics.enums.OrderStatus;
-import com.dreams.logistics.enums.PickupDispatchTaskType;
+import com.dreams.logistics.enums.*;
 import com.dreams.logistics.exception.BusinessException;
 import com.dreams.logistics.model.dto.msg.OrderMsg;
 import com.dreams.logistics.model.dto.msg.TradeStatusMsg;
 import com.dreams.logistics.model.dto.order.OrderAddRequest;
+import com.dreams.logistics.model.dto.order.OrderPickupDTO;
 import com.dreams.logistics.model.dto.order.OrderSearchRequest;
 import com.dreams.logistics.model.dto.order.OrderUpdateRequest;
-import com.dreams.logistics.model.entity.Area;
-import com.dreams.logistics.model.entity.Order;
-import com.dreams.logistics.model.entity.OrderCargo;
-import com.dreams.logistics.model.entity.OrderLocation;
+import com.dreams.logistics.model.entity.*;
 import com.dreams.logistics.model.vo.OrderVO;
 import com.dreams.logistics.service.*;
 import com.dreams.logistics.mapper.OrderMapper;
 import com.dreams.logistics.utils.BaiduMap;
+import com.dreams.logistics.utils.SecurityUtil;
 import com.dreams.logistics.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.geo.GeoResult;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.neo4j.types.Coordinate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -79,19 +78,21 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     @Resource
     private OrderLocationService orderLocationService;
 
+    @Resource
+    private ScopeService scopeService;
+
     @Override
     public Page<OrderVO> page(OrderSearchRequest orderSearchRequest) {
         int current = orderSearchRequest.getCurrent();
         long size = orderSearchRequest.getPageSize();
-        Order order = new Order();
-        BeanUtils.copyProperties(orderSearchRequest, order);
+        Order order = BeanUtil.toBean(orderSearchRequest, Order.class);
         Page<Order> orderPage = orderService.page(new Page<>(current, size),
                 orderService.getQueryWrapper(orderSearchRequest));
 
         List<Order> records = orderPage.getRecords();
 
         List<OrderVO> collect = records.stream().map(orderRecord -> {
-            OrderVO orderVO = new OrderVO();
+
             Long id = orderRecord.getId();
             OrderCargo orderCargo = orderCargoService.getByOrderId(id);
 
@@ -99,7 +100,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             BigDecimal totalVolume = orderCargo.getTotalVolume();
             BigDecimal totalWeight = orderCargo.getTotalWeight();
 
-            BeanUtils.copyProperties(orderRecord, orderVO);
+            OrderVO orderVO = BeanUtil.toBean(orderRecord, OrderVO.class);
             orderVO.setName(name);
             orderVO.setVolume(totalVolume);
             orderVO.setWeight(totalWeight);
@@ -115,10 +116,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
     @Override
     public Boolean saveOrderVO(OrderAddRequest orderAddRequest) {
-
-
         Order order = new Order();
-        BeanUtils.copyProperties(orderAddRequest, order);
+        BeanUtils.copyProperties(orderAddRequest,order);
 
         LocalDateTime timeOne = LocalDateTime.ofInstant(orderAddRequest.getPickupTimeRange().get(0).toInstant(), ZoneId.systemDefault());
         LocalDateTime timeTwo = LocalDateTime.ofInstant(orderAddRequest.getPickupTimeRange().get(1).toInstant(), ZoneId.systemDefault());
@@ -126,15 +125,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         order.setEstimatedStartTime(timeOne);
         order.setEstimatedArrivalTime(timeTwo);
 
+        //省市区
         List<Long> receiverAddressId = orderAddRequest.getReceiverAddressId();
         order.setReceiverProvinceId(receiverAddressId.get(0));
-        order.setReceiverMemberId(receiverAddressId.get(1));
-        order.setReceiverCityId(receiverAddressId.get(2));
+        order.setReceiverCityId(receiverAddressId.get(1));
+        order.setReceiverCountyId(receiverAddressId.get(2));
 
         List<Long> senderAddressId = orderAddRequest.getSenderAddressId();
         order.setSenderProvinceId(senderAddressId.get(0));
-        order.setSenderCountyId(senderAddressId.get(1));
-        order.setSenderCityId(senderAddressId.get(2));
+        order.setSenderCityId(senderAddressId.get(1));
+        order.setSenderCountyId(senderAddressId.get(2));
 
 
         //获取位置信息
@@ -143,14 +143,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
         // 距离 设置当前机构ID
         appendOtherInfo(order, orderLocation);
-        
+
+        order.setCreateTime(LocalDateTime.now());
         order.setPaymentStatus(OrderPaymentStatus.UNPAID.getStatus());
         if (OrderPickupType.NO_PICKUP.getCode().equals(order.getPickupType())) {
             order.setStatus(OrderStatus.OUTLETS_SINCE_SENT.getCode());
         } else {
             order.setStatus(OrderStatus.PENDING.getCode());
         }
-        
+
+        DcUser user = SecurityUtil.getUser();
+        order.setCreateUser(user.getId());
+
         if (orderService.save(order)){
             OrderCargo orderCargo = new OrderCargo();
             orderCargo.setOrderId(order.getId());
@@ -188,7 +192,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         LocalDateTime estimatedArrivalTime = orderEntity.getEstimatedArrivalTime();
 
         OrderMsg orderMsg = OrderMsg.builder()
-                .created(LocalDateTimeUtil.toEpochMilli(orderEntity.getCreateTime()))
+                .created(LocalDateTimeUtil.toEpochMilli(orderEntity.getEstimatedArrivalTime()))
                 .estimatedEndTime(estimatedArrivalTime)
                 .mark(orderEntity.getMark())
                 .taskType(PickupDispatchTaskType.PICKUP.getCode())
@@ -340,30 +344,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             log.error("地址不能为空");
             throw new BusinessException(ErrorCode.ADDRESS_CANNOT_BE_EMPTY);
         }
-        String geocoding = "";
-        try {
-            //根据详细地址查询坐标
-            geocoding = baiduMap.geocoding(address);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        JSONObject jsonObject = JSONUtil.parseObj(geocoding);
-
-        // 获取 "result" 对象
-        JSONObject resultJson = jsonObject.getJSONObject("result");
-
-        if (ObjectUtil.isEmpty(resultJson)) {
-            log.error("地址无法定位");
-            throw new BusinessException(ErrorCode.ADDRESS_CANNOT_BE_LOCATED);
-        }
-
-        // 获取 "location" 对象
-        JSONObject locationJson = resultJson.getJSONObject("location");
-
+        List<Double> list = baiduMap.geocodingReturn(address);
         // 提取经度和纬度
-        double lng = locationJson.getDouble("lng");
-        double lat = locationJson.getDouble("lat");
+        double lng = list.get(0);
+        double lat =  list.get(1);
 
         log.info("地址和坐标-->" + address + "--" + lng + " , " + lat);
 
@@ -372,15 +357,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         String latStr = df.format(lat);
 
         String location = StrUtil.format("{},{}", lngStr, latStr);
-        HashMap<String,String> result = new HashMap();
 
-        // todo 服务范围
-        List<Object> serviceScope = new ArrayList<>();
-        if (CollectionUtils.isEmpty(serviceScope)) {
+
+        List<ServiceScope> serviceScopeS = scopeService.queryListByPoint(ServiceTypeEnum.codeOf(1), new GeoJsonPoint(lng, lat));
+
+        if (CollectionUtils.isEmpty(serviceScopeS)) {
             log.error("地址不在服务范围");
             throw new BusinessException(ErrorCode.ADDRESS_IS_NOT_IN_SERVICE);
         }
+        HashMap<String,String> result = new HashMap();
 
+        result.put("agencyId", serviceScopeS.get(0).getBid().toString());
+        result.put("location", location);
         return result;
     }
 
@@ -399,7 +387,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         Order order = orderService.getById(orderUpdateRequest.getId());
         BeanUtils.copyProperties(orderUpdateRequest, order);
 
-
         LocalDateTime timeOne = LocalDateTime.ofInstant(orderUpdateRequest.getPickupTimeRange().get(0).toInstant(), ZoneId.systemDefault());
         LocalDateTime timeTwo = LocalDateTime.ofInstant(orderUpdateRequest.getPickupTimeRange().get(1).toInstant(), ZoneId.systemDefault());
 
@@ -408,13 +395,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
         List<Long> receiverAddressId = orderUpdateRequest.getReceiverAddressId();
         order.setReceiverProvinceId(receiverAddressId.get(0));
-        order.setReceiverMemberId(receiverAddressId.get(1));
-        order.setReceiverCityId(receiverAddressId.get(2));
+        order.setReceiverCityId(receiverAddressId.get(1));
+        order.setReceiverCountyId(receiverAddressId.get(2));
 
         List<Long> senderAddressId = orderUpdateRequest.getSenderAddressId();
         order.setSenderProvinceId(senderAddressId.get(0));
-        order.setSenderCountyId(senderAddressId.get(1));
-        order.setSenderCityId(senderAddressId.get(2));
+        order.setSenderCityId(senderAddressId.get(1));
+        order.setSenderCountyId(senderAddressId.get(2));
         boolean a = orderService.updateById(order);
 
         OrderCargo orderCargo = orderCargoService.getByOrderId(orderUpdateRequest.getId());
@@ -436,7 +423,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         Order order = orderService.getById(id);
         OrderCargo orderCargo = orderCargoService.getByOrderId(order.getId());
         OrderVO orderVO = new OrderVO();
-        BeanUtils.copyProperties(orderVO,orderVO);
+        BeanUtils.copyProperties(order,orderVO);
         orderVO.setName(orderCargo.getName());
         orderVO.setVolume(orderCargo.getTotalVolume());
         orderVO.setWeight(orderCargo.getWeight());
@@ -473,8 +460,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         String sortField = orderQueryRequest.getSortField();
         String sortOrder = orderQueryRequest.getSortOrder();
 
+        Long createUser = orderQueryRequest.getCreateUser();
 
         QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(createUser != null, "create_user", createUser);
         queryWrapper.eq(!Objects.isNull(paymentStatus), "payment_status", paymentStatus);
         queryWrapper.eq(!Objects.isNull(amount), "amount", amount);
         queryWrapper.eq(!Objects.isNull(orderType), "order_type", orderType);
@@ -545,6 +534,41 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     @Override
     public void updateRefundInfo(List<TradeStatusMsg> msgList) {
         // todo 退款需要更改多个业务
+    }
+
+    @Override
+    public void updateStatus(List<Long> orderId, Integer code) {
+        update(Wrappers.<Order>lambdaUpdate()
+                .in(Order::getId, orderId)
+                .set(Order::getStatus, code));
+    }
+
+    @Override
+    public void orderPickup(OrderPickupDTO orderPickupDTO) {
+        //5.更新订单
+        Order order = new Order();
+        order.setPaymentMethod(orderPickupDTO.getPayMethod());//付款方式,1.预结2到付
+        order.setPaymentStatus(OrderPaymentStatus.UNPAID.getStatus());//付款状态,1.未付2已付
+        order.setAmount(orderPickupDTO.getAmount());//金额
+        order.setStatus(OrderStatus.PICKED_UP.getCode());//订单状态
+        order.setMark(orderPickupDTO.getRemark());//备注
+        order.setId(orderPickupDTO.getId());
+        updateById(order);
+
+        //6.更新订单货品
+        BigDecimal volume = NumberUtil.round(orderPickupDTO.getVolume(), 4);
+        BigDecimal weight = NumberUtil.round(orderPickupDTO.getWeight(), 2);
+
+        OrderCargo cargoDTO = orderCargoService.getByOrderId(orderPickupDTO.getId());
+
+        OrderCargo orderCargo = new OrderCargo();
+        orderCargo.setName(orderPickupDTO.getGoodName());//货物名称
+        orderCargo.setVolume(volume);//货品体积，单位m^3
+        orderCargo.setWeight(weight);//货品重量，单位kg
+        orderCargo.setTotalVolume(volume);//货品总体积，单位m^3
+        orderCargo.setTotalWeight(weight);//货品总重量，单位kg
+        orderCargo.setId(cargoDTO.getId());
+        orderCargoService.saveOrUpdate(orderCargo);
     }
 }
 

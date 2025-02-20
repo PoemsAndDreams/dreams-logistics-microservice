@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dreams.logistics.model.dto.msg.TradeStatusMsg;
 import com.dreams.logistics.model.dto.order.OrderAddRequest;
+import com.dreams.logistics.model.dto.order.OrderPickupDTO;
 import com.dreams.logistics.model.dto.order.OrderSearchRequest;
 import com.dreams.logistics.model.dto.order.OrderUpdateRequest;
 import com.dreams.logistics.model.entity.DcUser;
@@ -35,4 +36,8 @@ public interface OrderService extends IService<Order> {
     void updatePayStatus(List<Long> ids, Integer status);
 
     void updateRefundInfo(List<TradeStatusMsg> msgList);
+
+    void updateStatus(List<Long> orderId, Integer code);
+
+    void orderPickup(OrderPickupDTO orderPickupDTO);
 }

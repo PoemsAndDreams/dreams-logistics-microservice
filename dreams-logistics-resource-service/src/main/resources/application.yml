@@ -206,7 +206,7 @@ xxl:
     admin:
       addresses: http://localhost:8080/xxl-job-admin
     executor:
-      appname: dreams-trade
+      appname: dreams-logistics-trade
       address:
       ip:
       port: 9999

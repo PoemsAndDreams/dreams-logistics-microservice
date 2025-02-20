@@ -32,4 +32,6 @@ public interface WorkScheduleService extends IService<WorkSchedule> {
     WorkScheduleVO getWorkScheduleVO(WorkSchedule workSchedule);
 
     List<Long> getWorkingDrivers(List<Long> driverIds, LocalDateTime planDepartureTime, LocalDateTime planArrivalTime);
+
+    List<WorkScheduleVO> employeeSchedule(List<Long> userIds,  LocalDateTime estimatedEndTime);
 }

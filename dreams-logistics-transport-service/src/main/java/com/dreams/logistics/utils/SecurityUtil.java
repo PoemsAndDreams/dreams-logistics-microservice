@@ -1,4 +1,4 @@
-package com.dreams.logistics.util;
+package com.dreams.logistics.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.dreams.logistics.model.entity.DcUser;

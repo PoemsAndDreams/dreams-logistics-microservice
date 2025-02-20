@@ -1,5 +1,6 @@
 package com.dreams.logistics.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -154,6 +156,7 @@ public class WorkScheduleServiceImpl extends ServiceImpl<WorkScheduleMapper, Wor
 
         // 将转换后的数据封装到 WorkScheduleVO 对象中
         WorkScheduleVO workScheduleVO = new WorkScheduleVO();
+        BeanUtils.copyProperties(workSchedule,workScheduleVO);
         workScheduleVO.setWeekSchedule(weekScheduleList);
         return workScheduleVO;
 
@@ -203,6 +206,36 @@ public class WorkScheduleServiceImpl extends ServiceImpl<WorkScheduleMapper, Wor
             return workUserIds;
         }
         return workUserIds.subList(0, 2);
+    }
+
+    @Override
+    public List<WorkScheduleVO> employeeSchedule(List<Long> userIds,LocalDateTime estimatedEndTime) {
+
+        LambdaQueryWrapper<WorkSchedule> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(CollUtil.isNotEmpty(userIds), WorkSchedule::getUserId, userIds);
+        List<WorkSchedule> list = this.list(wrapper);
+
+        List<WorkScheduleVO> workScheduleVO = getWorkScheduleVO(list);
+
+        // 获取估算结束时间的周几
+        int dayOfWeek = estimatedEndTime.getDayOfWeek().getValue();  // 1表示星期一，7表示星期日
+
+        // 遍历每个排班，筛选出在该时间段上班的记录
+        return workScheduleVO.stream()
+                .map(schedules -> {
+                    // 获取该排班的每周工作安排
+                    List<Integer> weekSchedule = schedules.getWeekSchedule();
+
+                    // 判断该时间段是否上班
+                    if (weekSchedule != null && weekSchedule.size() >= dayOfWeek && weekSchedule.get(dayOfWeek - 1) == 1) {
+                        // 说明该日期需要工作，返回WorkSchedule
+                        return schedules;
+                    }
+                    return null; // 没有工作安排的，返回null
+                })
+                .filter(Objects::nonNull) // 过滤掉null值
+                .collect(Collectors.toList());
+
     }
 }
 

@@ -101,4 +101,23 @@ dreams:
     enable: true
   rabbitmq:
     exchange: dreams-organization
+  volume:
+    ratio: 0.85
+  weight:
+    ratio: 0.90
+
+
+xxl:
+  job:
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+    executor:
+      appname: dreams-logistics-dispatch
+      address:
+      ip:
+      port: 9999
+      logpath: /data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+    accessToken: default_token
+
 

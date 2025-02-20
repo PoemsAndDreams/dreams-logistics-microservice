@@ -29,7 +29,9 @@ public enum ErrorCode {
     JSON_SERIALIZE_ERROR(60010,"序列化json出错！"),
     ADDRESS_CANNOT_BE_EMPTY(60011,"下单时发货地址不能为空"),
     ADDRESS_CANNOT_BE_LOCATED(60012,"地址无法定位"),
-    ADDRESS_IS_NOT_IN_SERVICE(60013,"地址不在服务范围");
+    ADDRESS_IS_NOT_IN_SERVICE(60013,"地址不在服务范围"),
+
+    NOT_TransportInfo_FOUND(60014,  "查询的运单不存在");
 
     /**
      * 状态码

@@ -2,7 +2,9 @@ package com.dreams.logistics.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.dreams.logistics.enums.StatusEnum;
+import com.dreams.logistics.enums.TruckRunStatusEnum;
 import com.dreams.logistics.model.dto.truck.TruckQueryRequest;
+import com.dreams.logistics.model.dto.truckPlan.TruckDto;
 import com.dreams.logistics.model.entity.Truck;
 import com.dreams.logistics.model.entity.Truck;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,4 +28,7 @@ public interface TruckService extends IService<Truck> {
 
     Truck getTruck(String licensePlate);
 
+    TruckDto fineById(Long truckId);
+
+    void updateRunStatus(Long truckId, TruckRunStatusEnum truckRunStatusEnum);
 }

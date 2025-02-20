@@ -1,5 +1,6 @@
 package com.dreams.logistics;
 
+import com.dreams.logistics.config.FeignConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan("com.dreams.logistics")
 @EnableDiscoveryClient
 @EnableNeo4jRepositories(basePackages = "com.dreams.logistics")
-@EnableFeignClients(basePackages = {"com.dreams.logistics.service"})
+@EnableFeignClients(basePackages = {"com.dreams.logistics"},defaultConfiguration = FeignConfig.class)
 public class DreamsLogisticsTransportServiceApplication {
 
 	public static void main(String[] args) {
